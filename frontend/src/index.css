@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Global resets & base styles
+───────────────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #09090f;
+  color: #e2e8f0;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Custom scrollbar (webkit)
+───────────────────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f17;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a4a;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Focus ring reset (use component-level focus or ring utilities instead)
+───────────────────────────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Range input accent (cross-browser)
+───────────────────────────────────────────────────────────────────────────── */
+input[type='range'] {
+  accent-color: #3b82f6;
+  height: 4px;
+  cursor: pointer;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Monaco Editor overrides — removes default outline
+───────────────────────────────────────────────────────────────────────────── */
+.monaco-editor .overflow-guard {
+  border-radius: 0 0 12px 12px;
+}
+.monaco-editor, .monaco-editor-background {
+  background-color: #0d0d14 !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Utility: text gradient
+───────────────────────────────────────────────────────────────────────────── */
+.text-gradient {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Animate slide-up (for modals, toasts)
+───────────────────────────────────────────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slideUp 0.2s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Animate fade-in
+───────────────────────────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Selection color
+───────────────────────────────────────────────────────────────────────────── */
+::selection {
+  background-color: #3b82f620;
+  color: #93c5fd;
+}
