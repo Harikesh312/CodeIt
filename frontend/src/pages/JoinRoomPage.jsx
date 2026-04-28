@@ -21,14 +21,22 @@ export default function JoinRoomPage() {
     setError('');
     setLoading(true);
 
-    // Simulate room lookup
-    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/rooms/code/${code}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Room not found');
 
-    // Mock: any 6-char code is valid in demo
-    const roomId = `room-${code.toLowerCase()}`;
-    joinRoom(roomId, code, 'Technical Interview');
-    setLoading(false);
-    navigate(`/room/${roomId}`);
+      joinRoom(data._id, data.code, data.title, data.createdBy);
+      navigate(`/room/${data._id}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCodeInput = (e) => {

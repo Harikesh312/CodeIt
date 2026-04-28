@@ -15,6 +15,7 @@ const initialState = {
   roomId: null,
   roomCode: null,
   roomTitle: '',
+  createdBy: '',
 
   // Editor
   language: DEFAULT_LANGUAGE,
@@ -50,7 +51,7 @@ function reducer(state, action) {
       return { ...state, user: action.payload, role: action.payload.role };
 
     case 'SET_ROOM':
-      return { ...state, roomId: action.payload.roomId, roomCode: action.payload.roomCode, roomTitle: action.payload.title || '' };
+      return { ...state, roomId: action.payload.roomId, roomCode: action.payload.roomCode, roomTitle: action.payload.title || '', createdBy: action.payload.createdBy || '' };
 
     case 'SET_LANGUAGE': {
       const lang = action.payload;
@@ -134,13 +135,25 @@ export function InterviewProvider({ children }) {
 
   // ── Timer management ────────────────────────────────────────────────────────
   useEffect(() => {
-    if (state.timerRunning) {
+    // Only HR ticks locally. Candidates rely purely on syncs to prevent double-ticking flutter.
+    if (state.timerRunning && state.role === ROLES.HR) {
       timerRef.current = setInterval(() => dispatch({ type: 'TICK_TIMER' }), 1000);
     } else {
       clearInterval(timerRef.current);
     }
     return () => clearInterval(timerRef.current);
-  }, [state.timerRunning]);
+  }, [state.timerRunning, state.role]);
+
+  // Sync timer to candidates (HR is the source of truth)
+  useEffect(() => {
+    if (state.role === ROLES.HR && state.roomId) {
+      socketService.emit('timer_update', {
+        seconds: state.timerSeconds,
+        roomId: state.roomId,
+        running: state.timerRunning,
+      });
+    }
+  }, [state.timerSeconds, state.timerRunning, state.role, state.roomId]);
 
   // ── Socket listeners ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -153,7 +166,17 @@ export function InterviewProvider({ children }) {
       dispatch({ type: 'RUN_SUCCESS', payload: { ...result, timestamp: new Date().toISOString() } });
     const onParticipantJoined = (p) => dispatch({ type: 'PARTICIPANT_JOINED', payload: p });
     const onParticipantLeft = ({ id }) => dispatch({ type: 'PARTICIPANT_LEFT', payload: id });
-    const onTimerSync = ({ seconds }) => dispatch({ type: 'SET_TIMER', payload: seconds });
+    const onTimerSync = ({ seconds, running }) => {
+      dispatch({ type: 'SET_TIMER', payload: seconds });
+      if (running !== undefined) {
+        dispatch({ type: 'SET_TIMER_RUNNING', payload: running });
+      }
+    };
+    const onInterviewEnd = () => {
+      socketService.disconnect();
+      alert('The interview has been ended by the interviewer.');
+      window.location.href = '/';
+    };
 
     socketService.on(SOCKET_EVENTS.CONNECT, onConnect);
     socketService.on(SOCKET_EVENTS.DISCONNECT, onDisconnect);
@@ -163,6 +186,7 @@ export function InterviewProvider({ children }) {
     socketService.on(SOCKET_EVENTS.PARTICIPANT_JOINED, onParticipantJoined);
     socketService.on(SOCKET_EVENTS.PARTICIPANT_LEFT, onParticipantLeft);
     socketService.on(SOCKET_EVENTS.TIMER_SYNC, onTimerSync);
+    socketService.on('interview_end', onInterviewEnd);
 
     return () => {
       socketService.off(SOCKET_EVENTS.CONNECT, onConnect);
@@ -173,16 +197,36 @@ export function InterviewProvider({ children }) {
       socketService.off(SOCKET_EVENTS.PARTICIPANT_JOINED, onParticipantJoined);
       socketService.off(SOCKET_EVENTS.PARTICIPANT_LEFT, onParticipantLeft);
       socketService.off(SOCKET_EVENTS.TIMER_SYNC, onTimerSync);
+      socketService.off('interview_end', onInterviewEnd);
     };
   }, []);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
-  const login = useCallback((name, role) => {
-    dispatch({ type: 'SET_USER', payload: { name, role } });
+  const login = useCallback(async (name, role) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, role }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      dispatch({ type: 'SET_USER', payload: data.user });
+    } catch (err) {
+      dispatch({ type: 'SET_ERROR', payload: err.message });
+      throw err;
+    }
   }, []);
 
-  const joinRoom = useCallback((roomId, roomCode, title = '') => {
-    dispatch({ type: 'SET_ROOM', payload: { roomId, roomCode, title } });
+  const joinRoom = useCallback((roomId, roomCode, title = '', createdBy = '') => {
+    dispatch({ type: 'SET_ROOM', payload: { roomId, roomCode, title, createdBy } });
     socketService.connect();
     socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, user: state.user });
   }, [state.user]);
@@ -234,6 +278,12 @@ export function InterviewProvider({ children }) {
   const clearError = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
   const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
 
+  const endInterview = useCallback(() => {
+    if (state.roomId) {
+      socketService.emit('interview_end', { roomId: state.roomId });
+    }
+  }, [state.roomId]);
+
   const value = {
     ...state,
     login,
@@ -249,6 +299,7 @@ export function InterviewProvider({ children }) {
     setError,
     clearError,
     reset,
+    endInterview,
   };
 
   return <InterviewContext.Provider value={value}>{children}</InterviewContext.Provider>;

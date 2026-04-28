@@ -29,11 +29,26 @@ function CreateRoomModal({ onClose, onCreate }) {
   const handleCreate = async () => {
     if (!title.trim()) { setError('Room title is required.'); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    const code = generateRoomCode();
-    onCreate({ title: title.trim(), candidate: candidate.trim(), duration, code, id: `room-${Date.now()}`, status: ROOM_STATUSES.WAITING, createdAt: new Date().toISOString() });
-    setLoading(false);
-    onClose();
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/rooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: title.trim(), candidate: candidate.trim(), duration }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create room');
+      onCreate({ ...data, id: data._id });
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -159,9 +174,34 @@ function RoomCard({ room, onEnter }) {
 }
 
 export default function DashboardPage() {
-  const { user, role } = useInterview();
-  const [rooms, setRooms] = useState(MOCK_ROOMS);
+  const { user, role, setError } = useInterview();
+  const [rooms, setRooms] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loadingRooms, setLoadingRooms] = useState(true);
+
+  React.useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${API_URL}/rooms`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch rooms');
+        setRooms(data.map(r => ({ ...r, id: r._id })));
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoadingRooms(false);
+      }
+    };
+    if (user && role === ROLES.HR) {
+        fetchRooms();
+    } else {
+        setLoadingRooms(false);
+    }
+  }, [user, role, setError]);
 
   const handleCreateRoom = (newRoom) => {
     setRooms((prev) => [newRoom, ...prev]);

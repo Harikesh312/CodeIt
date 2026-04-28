@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff } from 'lucide-react';
+import { Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES } from '../utils/constants';
 import Badge from './ui/Badge';
 import Timer from './Timer';
 
 export default function Navbar({ showTimer = false }) {
-  const { user, role, roomTitle, isSocketConnected, toggleSidebar, sidebarOpen, reset } =
+  const { user, role, roomTitle, roomCode, createdBy, isSocketConnected, toggleSidebar, sidebarOpen, reset, endInterview } =
     useInterview();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,10 +46,34 @@ export default function Navbar({ showTimer = false }) {
       </Link>
 
       {/* Room title (in room) */}
-      {isInRoom && roomTitle && (
+      {isInRoom && (
         <div className="hidden sm:flex items-center gap-2 text-gray-400 text-sm">
-          <span className="text-gray-600">/</span>
-          <span className="text-gray-200 font-medium truncate max-w-48">{roomTitle}</span>
+          {roomTitle && (
+            <>
+              <span className="text-gray-600">/</span>
+              <span className="text-gray-200 font-medium truncate max-w-48">{roomTitle}</span>
+            </>
+          )}
+          {role === ROLES.CANDIDATE && createdBy && (
+            <span className="text-gray-500 ml-2 hidden lg:inline">
+              (Interviewer: <span className="text-gray-300 font-medium">{createdBy}</span>)
+            </span>
+          )}
+          {roomCode && (
+            <>
+              <span className="text-gray-600 ml-2">ID:</span>
+              <code className="text-xs font-mono bg-gray-800 border border-gray-700 px-1.5 py-0.5 rounded-md text-gray-300">
+                {roomCode}
+              </code>
+              <button
+                onClick={() => navigator.clipboard.writeText(roomCode)}
+                className="p-1 rounded text-gray-500 hover:text-blue-400 transition-colors"
+                title="Copy Room ID"
+              >
+                <Copy size={12} />
+              </button>
+            </>
+          )}
         </div>
       )}
 
@@ -76,6 +100,21 @@ export default function Navbar({ showTimer = false }) {
             </span>
           )}
         </div>
+      )}
+
+      {/* End Interview Button (HR only) */}
+      {isInRoom && role === ROLES.HR && (
+        <button
+          onClick={() => {
+            if (window.confirm('Are you sure you want to end this interview? The room will be closed for all participants.')) {
+              endInterview();
+              navigate('/dashboard');
+            }
+          }}
+          className="ml-4 px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-md shadow-sm transition-colors hidden sm:block"
+        >
+          End Interview
+        </button>
       )}
 
       {/* User info */}

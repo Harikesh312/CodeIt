@@ -10,50 +10,52 @@
 // Replace runCode() body below with the real implementation.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const MOCK_OUTPUTS = {
-  javascript: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  typescript: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  python: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  java: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  cpp: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  go: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
-  rust: `Hello, CodeIt!\n✓ Executed successfully (0ms)`,
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+/**
+ * Helper to get the JWT token.
+ */
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 };
 
 /**
- * Run code in the specified language.
- * Currently returns a mock output after a simulated delay.
+ * Run code in the specified language via the backend.
  *
  * @param {string} language  – One of the LANGUAGES[].id values
  * @param {string} code      – Source code to execute
+ * @param {string} roomId    - Current room ID (optional for just running)
  * @returns {Promise<{ output: string; error: boolean; executionTime: number }>}
  */
-export async function runCode(language, code) {
-  // Simulate network/execution delay
-  const delay = Math.floor(Math.random() * 800) + 400;
-  await new Promise((resolve) => setTimeout(resolve, delay));
+export async function runCode(language, code, roomId = null) {
+  try {
+    const res = await fetch(`${API_URL}/code/run`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ language, code, roomId }),
+    });
 
-  // Simulate occasional error for demo purposes
-  const forceError = code.includes('throw') || code.includes('raise') || code.includes('panic');
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Server error: ${res.status}`);
+    }
 
-  if (forceError) {
+    return await res.json();
+  } catch (error) {
     return {
-      output: `RuntimeError: Unhandled exception in ${language} execution.\n  at line 3: intentional error thrown`,
+      output: `Error executing code: ${error.message}`,
       error: true,
-      executionTime: delay,
+      executionTime: 0,
     };
   }
-
-  return {
-    output: MOCK_OUTPUTS[language] ?? `Output for ${language}:\n${code.slice(0, 100)}`,
-    error: false,
-    executionTime: delay,
-  };
 }
 
 /**
  * Submit code for final evaluation.
- * TODO: Replace with a real submission endpoint that runs full test cases.
  *
  * @param {string} language
  * @param {string} code
@@ -61,10 +63,24 @@ export async function runCode(language, code) {
  * @returns {Promise<{ success: boolean; message: string }>}
  */
 export async function submitCode(language, code, roomId) {
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-  console.log(`[codeRunnerService] submit → room: ${roomId}, language: ${language}`);
-  return {
-    success: true,
-    message: 'Code submitted successfully! The interviewer has been notified.',
-  };
+  try {
+    const res = await fetch(`${API_URL}/code/submit`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ language, code, roomId }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || `Server error: ${res.status}`);
+    }
+
+    return data;
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
 }
