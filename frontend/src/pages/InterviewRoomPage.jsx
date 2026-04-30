@@ -99,26 +99,36 @@ export default function InterviewRoomPage() {
           <Timer />
         </aside>
 
-        {/* ── Center: Editor ─────────────────────────────────────────────────── */}
+        {/* ── Center: Editor / HR Monitor ──────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-          {/* Editor takes remaining height above ControlBar */}
-          <div className="flex-1 p-3 overflow-hidden">
-            <EditorPanel />
-          </div>
-          {/* ControlBar sticks to bottom */}
-          <ControlBar />
+          {isHR ? (
+            <div className="flex-1 p-3 overflow-hidden bg-gray-950">
+              <HRMonitorPanel />
+            </div>
+          ) : (
+            <>
+              {/* Editor takes remaining height above ControlBar */}
+              <div className="flex-1 p-3 overflow-hidden">
+                <EditorPanel />
+              </div>
+              {/* ControlBar sticks to bottom for candidates */}
+              <ControlBar />
+            </>
+          )}
         </div>
 
-        {/* ── Right Panel: Output or HR Monitor ──────────────────────────────── */}
-        <aside className="w-72 xl:w-80 flex-shrink-0 border-l border-gray-800 p-3 hidden md:block overflow-hidden">
-          {isHR ? <HRMonitorPanel /> : <OutputPanel />}
-        </aside>
+        {/* ── Right Panel: Output ─────────────────────────────────────────────── */}
+        {!isHR && (
+          <aside className="w-72 xl:w-80 flex-shrink-0 border-l border-gray-800 p-3 hidden md:block overflow-hidden">
+            <OutputPanel />
+          </aside>
+        )}
       </div>
 
       {/* Mobile bottom panels (stacked below editor on small screens) */}
       <div className="lg:hidden border-t border-gray-800 max-h-48 overflow-y-auto">
         <div className="p-3">
-          <OutputPanel />
+          {isHR ? <HRMonitorPanel /> : <OutputPanel />}
         </div>
       </div>
     </div>

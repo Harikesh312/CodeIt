@@ -173,6 +173,9 @@ export default function ProblemPanel() {
           </div>
 
           {/* Description */}
+          <div className="bg-blue-500/10 border border-blue-500/20 rounded p-2 mb-2 text-[10px] text-blue-300">
+            <strong>Note:</strong> Your code should read input from stdin and print the answer to stdout.
+          </div>
           <p className="text-gray-300 text-xs leading-relaxed whitespace-pre-wrap">{currentProblem.description}</p>
 
           {/* Constraints */}

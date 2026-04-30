@@ -2,12 +2,13 @@ import React, { useState, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import { ChevronDown, Copy, Check, Maximize2 } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
-import { LANGUAGES } from '../utils/constants';
+import { LANGUAGES, ROLES } from '../utils/constants';
 import { copyToClipboard } from '../utils/helpers';
 import LoadingSpinner from './ui/LoadingSpinner';
 
 export default function EditorPanel() {
-  const { code, language, setCode, setLanguage } = useInterview();
+  const { code, language, setCode, setLanguage, role } = useInterview();
+  const isHR = role === ROLES.HR;
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [cursorInfo, setCursorInfo] = useState({ line: 1, col: 1 });
@@ -57,15 +58,17 @@ export default function EditorPanel() {
           <div className="relative">
             <button
               id="language-selector"
-              onClick={() => setLangDropdownOpen((v) => !v)}
-              className="flex items-center gap-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 px-3 py-1.5 rounded-md border border-gray-700 transition-colors"
+              onClick={() => !isHR && setLangDropdownOpen((v) => !v)}
+              className={`flex items-center gap-2 text-sm text-gray-300 bg-gray-800 px-3 py-1.5 rounded-md border border-gray-700 transition-colors ${!isHR ? 'hover:bg-gray-700 cursor-pointer' : 'cursor-default opacity-80'}`}
             >
               <span>{language.icon}</span>
               <span>{language.label}</span>
-              <ChevronDown
-                size={13}
-                className={`text-gray-500 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`}
-              />
+              {!isHR && (
+                <ChevronDown
+                  size={13}
+                  className={`text-gray-500 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`}
+                />
+              )}
             </button>
 
             {langDropdownOpen && (
@@ -145,8 +148,8 @@ export default function EditorPanel() {
             bracketPairColorization: { enabled: true },
             formatOnPaste: true,
             formatOnType: true,
-            tabSize: 2,
             automaticLayout: true,
+            readOnly: isHR,
           }}
           loading={
             <div className="h-full flex items-center justify-center bg-[#1e1e1e]">

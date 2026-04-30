@@ -102,18 +102,25 @@ export default function Navbar({ showTimer = false }) {
         </div>
       )}
 
-      {/* End Interview Button (HR only) */}
-      {isInRoom && role === ROLES.HR && (
+      {/* Leave/End Interview Button */}
+      {isInRoom && (
         <button
           onClick={() => {
-            if (window.confirm('Are you sure you want to end this interview? The room will be closed for all participants.')) {
-              endInterview();
-              navigate('/dashboard');
+            if (role === ROLES.HR) {
+              if (window.confirm('Are you sure you want to end this interview? The room will be closed for all participants.')) {
+                endInterview();
+                navigate('/dashboard');
+              }
+            } else {
+              if (window.confirm('Are you sure you want to leave this interview?')) {
+                reset();
+                navigate('/');
+              }
             }
           }}
           className="ml-4 px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-semibold rounded-md shadow-sm transition-colors hidden sm:block"
         >
-          End Interview
+          {role === ROLES.HR ? 'End Interview' : 'Leave Interview'}
         </button>
       )}
 

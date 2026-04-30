@@ -2,12 +2,12 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Terminal, Trash2, Clock3, CheckCircle2, XCircle, ChevronDown, ChevronRight, FlaskConical, EyeOff } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 
-function OutputLine({ line }) {
+function OutputLine({ line, isError }) {
+  if (isError || line.toLowerCase().includes('error') || line.toLowerCase().includes('exception')) {
+    return <span className="text-red-400">{line}</span>;
+  }
   if (line.startsWith('✓') || line.startsWith('// Stub') || line.includes('successfully')) {
     return <span className="text-emerald-400">{line}</span>;
-  }
-  if (line.toLowerCase().includes('error') || line.toLowerCase().includes('exception')) {
-    return <span className="text-red-400">{line}</span>;
   }
   if (line.startsWith('//')) {
     return <span className="text-gray-500 italic">{line}</span>;
@@ -134,7 +134,7 @@ export default function OutputPanel() {
   const { output, isRunning, isRunningTests, submitResult, testResults } = useInterview();
   const bottomRef = useRef(null);
   const [history, setHistory] = React.useState([]);
-  const [activeTab, setActiveTab] = useState('console');
+  const [activeTab, setActiveTab] = useState('terminal');
 
   // Accumulate output history
   useEffect(() => {
@@ -173,15 +173,15 @@ export default function OutputPanel() {
       <div className="flex items-center justify-between bg-gray-900 border-b border-gray-800 flex-shrink-0">
         <div className="flex">
           <button
-            onClick={() => setActiveTab('console')}
+            onClick={() => setActiveTab('terminal')}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === 'console'
+              activeTab === 'terminal'
                 ? 'text-emerald-400 border-emerald-400'
                 : 'text-gray-500 border-transparent hover:text-gray-300'
             }`}
           >
             <Terminal size={13} />
-            Console
+            Terminal
           </button>
           <button
             onClick={() => setActiveTab('tests')}
@@ -204,7 +204,7 @@ export default function OutputPanel() {
             )}
           </button>
         </div>
-        {activeTab === 'console' && history.length > 0 && (
+        {activeTab === 'terminal' && history.length > 0 && (
           <button
             onClick={() => setHistory([])}
             className="flex items-center gap-1.5 text-xs text-gray-600 hover:text-red-400 transition-colors mr-3"
@@ -217,7 +217,7 @@ export default function OutputPanel() {
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto p-4 font-mono text-sm space-y-4">
-        {activeTab === 'console' ? (
+        {activeTab === 'terminal' ? (
           <>
             {history.length === 0 && !isRunning ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-12">
@@ -249,7 +249,7 @@ export default function OutputPanel() {
                     <pre className="whitespace-pre-wrap leading-relaxed">
                       {(entry.output || '').split('\n').map((line, i) => (
                         <div key={i}>
-                          <OutputLine line={line} />
+                          <OutputLine line={line} isError={entry.error} />
                         </div>
                       ))}
                     </pre>

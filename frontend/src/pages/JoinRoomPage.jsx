@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function JoinRoomPage() {
-  const { joinRoom, user } = useInterview();
+  const { joinRoom, user, reset } = useInterview();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -138,7 +138,10 @@ export default function JoinRoomPage() {
           <p className="text-gray-600 text-xs">
             Don&apos;t have a code?{' '}
             <button
-              onClick={() => navigate('/')}
+              onClick={() => {
+                reset();
+                navigate('/');
+              }}
               className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"
             >
               Go back

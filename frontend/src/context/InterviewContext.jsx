@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef, useState } from 'react';
-import { DEFAULT_LANGUAGE, DEFAULT_CODE_TEMPLATES, ROLES, SOCKET_EVENTS } from '../utils/constants';
+import { DEFAULT_LANGUAGE, DEFAULT_CODE_TEMPLATES, ROLES, SOCKET_EVENTS, LANGUAGES } from '../utils/constants';
 import { runCode as runCodeService, submitCode as submitCodeService, runTests as runTestsService } from '../services/codeRunnerService';
 import socketService from '../services/socketService';
 
@@ -9,6 +9,8 @@ import socketService from '../services/socketService';
 const STORAGE_KEYS = {
   USER: 'codeit_user',
   ROOM: 'codeit_room',
+  CODE: 'codeit_code',
+  LANGUAGE: 'codeit_language',
 };
 
 function saveToStorage(key, value) {
@@ -197,12 +199,25 @@ const InterviewContext = createContext(null);
 export function InterviewProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const timerRef = useRef(null);
+  const setCodeTimeoutRef = useRef(null);
+  const restoredCodeRef = useRef(false);
   const [isRestoringSession, setIsRestoringSession] = useState(true);
 
   // ── Restore session from localStorage on mount ───────────────────────────
   useEffect(() => {
     const savedUser = readFromStorage(STORAGE_KEYS.USER);
     const savedRoom = readFromStorage(STORAGE_KEYS.ROOM);
+    const savedCode = readFromStorage(STORAGE_KEYS.CODE);
+    const savedLangId = readFromStorage(STORAGE_KEYS.LANGUAGE);
+
+    if (savedLangId) {
+      const langObj = LANGUAGES.find((l) => l.id === savedLangId);
+      if (langObj) dispatch({ type: 'SET_LANGUAGE', payload: langObj });
+    }
+    if (savedCode) {
+      dispatch({ type: 'SET_CODE', payload: savedCode });
+      restoredCodeRef.current = true;
+    }
 
     if (savedUser && savedUser.token) {
       // Validate token is not obviously expired by checking its payload
@@ -231,6 +246,8 @@ export function InterviewProvider({ children }) {
 
       if (savedRoom && savedRoom.roomId) {
         dispatch({ type: 'SET_ROOM', payload: savedRoom });
+        socketService.connect();
+        socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId: savedRoom.roomId, user: savedUser });
       }
     }
 
@@ -327,6 +344,26 @@ export function InterviewProvider({ children }) {
     };
   }, []);
 
+  const [lastProblemId, setLastProblemId] = useState(null);
+  useEffect(() => {
+    if (state.currentProblem && state.currentProblem._id !== lastProblemId) {
+      const isInitialLoad = lastProblemId === null;
+      setLastProblemId(state.currentProblem._id);
+      
+      if (state.role === ROLES.CANDIDATE && state.currentProblem.testCases?.length > 0) {
+        if (isInitialLoad && restoredCodeRef.current) {
+          // Do not overwrite saved code on refresh
+        } else {
+          // Auto-update to default reading template
+          const codeToSet = DEFAULT_CODE_TEMPLATES[state.language.id];
+          dispatch({ type: 'SET_CODE', payload: codeToSet });
+          saveToStorage(STORAGE_KEYS.CODE, codeToSet);
+          socketService.emit(SOCKET_EVENTS.CODE_CHANGE, { code: codeToSet });
+        }
+      }
+    }
+  }, [state.currentProblem, state.role, state.language.id, lastProblemId]);
+
   // ── Actions ─────────────────────────────────────────────────────────────────
   const login = useCallback(async (name, role) => {
     try {
@@ -380,11 +417,16 @@ export function InterviewProvider({ children }) {
 
   const setLanguage = useCallback((lang) => {
     dispatch({ type: 'SET_LANGUAGE', payload: lang });
+    saveToStorage(STORAGE_KEYS.LANGUAGE, lang.id);
     socketService.emit(SOCKET_EVENTS.LANGUAGE_CHANGE, { language: lang });
   }, []);
 
   const setCode = useCallback((code) => {
     dispatch({ type: 'SET_CODE', payload: code });
+    if (setCodeTimeoutRef.current) clearTimeout(setCodeTimeoutRef.current);
+    setCodeTimeoutRef.current = setTimeout(() => {
+      saveToStorage(STORAGE_KEYS.CODE, code);
+    }, 2000);
     // Throttle socket emit — in production use debounce/throttle
     socketService.emit(SOCKET_EVENTS.CODE_CHANGE, { code });
   }, []);
@@ -465,6 +507,8 @@ export function InterviewProvider({ children }) {
   const reset = useCallback(() => {
     removeFromStorage(STORAGE_KEYS.USER);
     removeFromStorage(STORAGE_KEYS.ROOM);
+    removeFromStorage(STORAGE_KEYS.CODE);
+    removeFromStorage(STORAGE_KEYS.LANGUAGE);
     localStorage.removeItem('token');
     socketService.disconnect();
     dispatch({ type: 'RESET' });

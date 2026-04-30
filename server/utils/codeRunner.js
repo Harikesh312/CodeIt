@@ -135,9 +135,18 @@ const runCodeWithTestCases = async (frontendLangId, code, testCases) => {
 
       const fetch = await getFetch();
 
+      let finalCode = code;
+      if (tc.input && tc.input.trim() !== '') {
+        if (frontendLangId === 'javascript' && !code.includes('readline') && !code.includes('process.stdin')) {
+          finalCode += `\n\n// Backend Harness\nconst fs = require('fs');\ntry { const _stdin = fs.readFileSync(0, 'utf-8').trim(); if(_stdin && typeof solution === 'function') console.log(solution(_stdin)); } catch(e) {}`;
+        } else if (frontendLangId === 'python' && !code.includes('sys.stdin') && !code.includes('input(')) {
+          finalCode += `\n\n# Backend Harness\nimport sys\ntry:\n  _stdin_val = sys.stdin.read().strip()\n  if _stdin_val and 'solution' in globals(): print(solution(_stdin_val))\nexcept: pass`;
+        }
+      }
+
       const body = {
         compiler: langConfig.compiler,
-        code,
+        code: finalCode,
         stdin: tc.input || '',
       };
 
@@ -163,8 +172,9 @@ const runCodeWithTestCases = async (frontendLangId, code, testCases) => {
       const exitCode = parseInt(result.status, 10);
       const hasError = exitCode !== 0 || !!result.signal;
 
-      const actualOutput = stdout.trim();
-      const expectedOutput = (tc.expectedOutput || '').trim();
+      const normalize = (str) => (str || '').replace(/\r\n/g, '\n').split('\n').map(l => l.trimEnd()).join('\n').trim();
+      const actualOutput = normalize(stdout);
+      const expectedOutput = normalize(tc.expectedOutput);
       const passed = !hasError && actualOutput === expectedOutput;
 
       if (passed) totalPassed++;

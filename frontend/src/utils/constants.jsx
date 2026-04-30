@@ -2,6 +2,10 @@
 // constants.js – App-wide constants
 // ─────────────────────────────────────────────────────────────────────────────
 
+import React from 'react';
+import { SiJavascript, SiPython, SiCplusplus, SiC } from 'react-icons/si';
+import { FaJava } from 'react-icons/fa';
+
 export const ROLES = {
   HR: 'hr',
   CANDIDATE: 'candidate',
@@ -15,21 +19,21 @@ export const ROOM_STATUSES = {
 };
 
 export const LANGUAGES = [
-  { id: 'javascript', label: 'JavaScript', monacoId: 'javascript', icon: '🟨' },
-  { id: 'python',     label: 'Python',     monacoId: 'python',     icon: '🐍' },
-  { id: 'java',       label: 'Java',       monacoId: 'java',       icon: '☕' },
-  { id: 'cpp',        label: 'C++',        monacoId: 'cpp',        icon: '⚙️' },
-  { id: 'c',          label: 'C',          monacoId: 'c',          icon: '🔵' },
+  { id: 'javascript', label: 'JavaScript', monacoId: 'javascript', icon: <SiJavascript className="text-yellow-400" /> },
+  { id: 'python',     label: 'Python',     monacoId: 'python',     icon: <SiPython className="text-blue-400" /> },
+  { id: 'java',       label: 'Java',       monacoId: 'java',       icon: <FaJava className="text-orange-500" /> },
+  { id: 'cpp',        label: 'C++',        monacoId: 'cpp',        icon: <SiCplusplus className="text-blue-500" /> },
+  { id: 'c',          label: 'C',          monacoId: 'c',          icon: <SiC className="text-blue-600" /> },
 ];
 
 export const DEFAULT_LANGUAGE = LANGUAGES[0]; // JavaScript
 
 export const DEFAULT_CODE_TEMPLATES = {
-  javascript: `// JavaScript Solution\nfunction solution(input) {\n  // Write your code here\n  return input;\n}\n\nconsole.log(solution("Hello, CodeIt!"));`,
-  python: `# Python Solution\ndef solution(input_val):\n    # Write your code here\n    return input_val\n\nprint(solution("Hello, CodeIt!"))`,
-  java: `// Java Solution\nimport java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.println("Hello, CodeIt!");\n    }\n}`,
-  cpp: `// C++ Solution\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, CodeIt!" << endl;\n    return 0;\n}`,
-  c: `// C Solution\n#include <stdio.h>\n\nint main() {\n    printf("Hello, CodeIt!\\n");\n    return 0;\n}`,
+  javascript: `// JavaScript Solution\nconst readline = require('readline');\n\nconst rl = readline.createInterface({\n    input: process.stdin,\n    output: process.stdout\n});\n\nrl.on('line', (line) => {\n    console.log(solution(line));\n});\n\nfunction solution(input) {\n    // Write your code here\n    return input;\n}`,
+  python: `# Python Solution\nimport sys\n\ndef solution(input_val):\n    # Write your code here\n    return input_val\n\nif __name__ == '__main__':\n    input_val = sys.stdin.read().strip()\n    if input_val:\n        print(solution(input_val))`,
+  java: `// Java Solution\nimport java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        if (sc.hasNextLine()) {\n            String input = sc.nextLine();\n            System.out.println(input);\n        }\n    }\n}`,
+  cpp: `// C++ Solution\n#include <iostream>\n#include <string>\nusing namespace std;\n\nint main() {\n    string input;\n    if (getline(cin, input)) {\n        cout << input << endl;\n    }\n    return 0;\n}`,
+  c: `// C Solution\n#include <stdio.h>\n\nint main() {\n    char input[256];\n    if (fgets(input, sizeof(input), stdin)) {\n        printf("%s", input);\n    }\n    return 0;\n}`,
 };
 
 export const INTERVIEW_DURATION_MINUTES = 60;

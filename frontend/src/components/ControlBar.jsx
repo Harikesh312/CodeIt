@@ -65,17 +65,19 @@ export default function ControlBar() {
         {/* Center: Actions */}
         <div className="flex items-center gap-3 mx-auto sm:mx-0">
           {/* Run */}
-          <Button
-            variant="secondary"
-            icon={Play}
-            size="md"
-            loading={isRunning}
-            onClick={runCode}
-            id="run-code-btn"
-            className="min-w-28"
-          >
-            {isRunning ? 'Running…' : 'Run Code'}
-          </Button>
+          {!hasTestCases && (
+            <Button
+              variant="secondary"
+              icon={Play}
+              size="md"
+              loading={isRunning}
+              onClick={runCode}
+              id="run-code-btn"
+              className="min-w-28"
+            >
+              {isRunning ? 'Running…' : 'Run Code'}
+            </Button>
+          )}
 
           {/* Run Tests — only if problem has test cases */}
           {hasTestCases && (
