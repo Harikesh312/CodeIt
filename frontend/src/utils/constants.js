@@ -16,24 +16,20 @@ export const ROOM_STATUSES = {
 
 export const LANGUAGES = [
   { id: 'javascript', label: 'JavaScript', monacoId: 'javascript', icon: '🟨' },
-  { id: 'typescript', label: 'TypeScript', monacoId: 'typescript', icon: '🔷' },
   { id: 'python',     label: 'Python',     monacoId: 'python',     icon: '🐍' },
   { id: 'java',       label: 'Java',       monacoId: 'java',       icon: '☕' },
   { id: 'cpp',        label: 'C++',        monacoId: 'cpp',        icon: '⚙️' },
-  { id: 'go',         label: 'Go',         monacoId: 'go',         icon: '🔵' },
-  { id: 'rust',       label: 'Rust',       monacoId: 'rust',       icon: '🦀' },
+  { id: 'c',          label: 'C',          monacoId: 'c',          icon: '🔵' },
 ];
 
 export const DEFAULT_LANGUAGE = LANGUAGES[0]; // JavaScript
 
 export const DEFAULT_CODE_TEMPLATES = {
   javascript: `// JavaScript Solution\nfunction solution(input) {\n  // Write your code here\n  return input;\n}\n\nconsole.log(solution("Hello, CodeIt!"));`,
-  typescript: `// TypeScript Solution\nfunction solution(input: string): string {\n  // Write your code here\n  return input;\n}\n\nconsole.log(solution("Hello, CodeIt!"));`,
   python: `# Python Solution\ndef solution(input_val):\n    # Write your code here\n    return input_val\n\nprint(solution("Hello, CodeIt!"))`,
-  java: `// Java Solution\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, CodeIt!");\n    }\n}`,
+  java: `// Java Solution\nimport java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        System.out.println("Hello, CodeIt!");\n    }\n}`,
   cpp: `// C++ Solution\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, CodeIt!" << endl;\n    return 0;\n}`,
-  go: `// Go Solution\npackage main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, CodeIt!")\n}`,
-  rust: `// Rust Solution\nfn main() {\n    println!("Hello, CodeIt!");\n}`,
+  c: `// C Solution\n#include <stdio.h>\n\nint main() {\n    printf("Hello, CodeIt!\\n");\n    return 0;\n}`,
 };
 
 export const INTERVIEW_DURATION_MINUTES = 60;

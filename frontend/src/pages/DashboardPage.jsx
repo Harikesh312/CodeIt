@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Plus, Video, Clock, Users, CheckCircle2, XCircle,
-  Copy, Check, X, AlertCircle, Calendar, Timer as TimerIcon
+  Copy, Check, X, AlertCircle, Calendar, Timer as TimerIcon, FileText
 } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES, ROOM_STATUSES, MOCK_ROOMS } from '../utils/constants';
@@ -11,6 +11,7 @@ import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
+import ProblemCreatorModal from '../components/ProblemCreatorModal';
 
 const statusVariantMap = {
   [ROOM_STATUSES.ACTIVE]: 'active',
@@ -18,6 +19,28 @@ const statusVariantMap = {
   [ROOM_STATUSES.COMPLETED]: 'completed',
   [ROOM_STATUSES.CANCELLED]: 'cancelled',
 };
+
+function SkeletonCard() {
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 animate-pulse">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <div className="h-5 bg-gray-800 rounded w-3/4 mb-2" />
+          <div className="h-3 bg-gray-800 rounded w-1/2" />
+        </div>
+        <div className="h-5 w-16 bg-gray-800 rounded-full ml-2" />
+      </div>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="h-3 w-16 bg-gray-800 rounded" />
+        <div className="h-3 w-12 bg-gray-800 rounded" />
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="h-6 w-20 bg-gray-800 rounded" />
+        <div className="h-8 w-24 bg-gray-800 rounded-lg" />
+      </div>
+    </div>
+  );
+}
 
 function CreateRoomModal({ onClose, onCreate }) {
   const [title, setTitle] = useState('');
@@ -117,7 +140,7 @@ function CreateRoomModal({ onClose, onCreate }) {
   );
 }
 
-function RoomCard({ room, onEnter }) {
+function RoomCard({ room, onEnter, onAddProblem }) {
   const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
   const { joinRoom } = useInterview();
@@ -163,11 +186,23 @@ function RoomCard({ room, onEnter }) {
             {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           </button>
         </div>
-        {(isActive || isWaiting) && (
-          <Button variant={isActive ? 'primary' : 'secondary'} size="sm" icon={Video} onClick={(e) => { e.stopPropagation(); handleEnter(); }}>
-            {isActive ? 'Join Live' : 'Enter Room'}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {(isActive || isWaiting) && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={FileText}
+                onClick={(e) => { e.stopPropagation(); onAddProblem(room); }}
+              >
+                Problem
+              </Button>
+              <Button variant={isActive ? 'primary' : 'secondary'} size="sm" icon={Video} onClick={(e) => { e.stopPropagation(); handleEnter(); }}>
+                {isActive ? 'Join Live' : 'Enter Room'}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -178,6 +213,7 @@ export default function DashboardPage() {
   const [rooms, setRooms] = useState([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loadingRooms, setLoadingRooms] = useState(true);
+  const [problemModal, setProblemModal] = useState(null); // { roomId, room }
 
   React.useEffect(() => {
     const fetchRooms = async () => {
@@ -207,6 +243,10 @@ export default function DashboardPage() {
     setRooms((prev) => [newRoom, ...prev]);
   };
 
+  const handleAddProblem = (room) => {
+    setProblemModal({ roomId: room.id, room });
+  };
+
   const activeCount = rooms.filter((r) => r.status === ROOM_STATUSES.ACTIVE).length;
   const waitingCount = rooms.filter((r) => r.status === ROOM_STATUSES.WAITING).length;
 
@@ -215,6 +255,13 @@ export default function DashboardPage() {
       <Navbar />
       {showCreateModal && (
         <CreateRoomModal onClose={() => setShowCreateModal(false)} onCreate={handleCreateRoom} />
+      )}
+      {problemModal && (
+        <ProblemCreatorModal
+          onClose={() => setProblemModal(null)}
+          onSave={() => setProblemModal(null)}
+          roomId={problemModal.roomId}
+        />
       )}
 
       <div className="flex flex-1 overflow-hidden">
@@ -258,7 +305,14 @@ export default function DashboardPage() {
             <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">
               All Rooms ({rooms.length})
             </h2>
-            {rooms.length === 0 ? (
+            {loadingRooms ? (
+              /* Skeleton loading cards */
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            ) : rooms.length === 0 ? (
               <div className="border-2 border-dashed border-gray-800 rounded-2xl py-20 flex flex-col items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gray-900 flex items-center justify-center">
                   <Video size={28} className="text-gray-700" />
@@ -271,7 +325,13 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {rooms.map((room) => <RoomCard key={room.id} room={room} />)}
+                {rooms.map((room) => (
+                  <RoomCard
+                    key={room.id}
+                    room={room}
+                    onAddProblem={handleAddProblem}
+                  />
+                ))}
               </div>
             )}
           </div>

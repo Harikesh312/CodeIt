@@ -1,14 +1,43 @@
-import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef, useState } from 'react';
 import { DEFAULT_LANGUAGE, DEFAULT_CODE_TEMPLATES, ROLES, SOCKET_EVENTS } from '../utils/constants';
-import { runCode as runCodeService, submitCode as submitCodeService } from '../services/codeRunnerService';
+import { runCode as runCodeService, submitCode as submitCodeService, runTests as runTestsService } from '../services/codeRunnerService';
 import socketService from '../services/socketService';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// localStorage helpers
+// ─────────────────────────────────────────────────────────────────────────────
+const STORAGE_KEYS = {
+  USER: 'codeit_user',
+  ROOM: 'codeit_room',
+};
+
+function saveToStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* quota exceeded or private mode */ }
+}
+
+function readFromStorage(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function removeFromStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch { /* ignore */ }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // State shape
 // ─────────────────────────────────────────────────────────────────────────────
 const initialState = {
   // Auth / Role
-  user: null,          // { name, role }
+  user: null,          // { name, role, id, token }
   role: null,          // ROLES.HR | ROLES.CANDIDATE
 
   // Room
@@ -27,15 +56,27 @@ const initialState = {
   isSubmitting: false,
   submitResult: null,
 
+  // Test Results
+  testResults: null,
+  isRunningTests: false,
+
   // Timer
   timerSeconds: 0,
   timerRunning: false,
 
   // Participants
-  participants: [],    // [{ id, name, role, online }]
+  participants: [],    // [{ id, name, role, online, joinedAt }]
 
   // Socket
   isSocketConnected: false,
+
+  // Problem
+  currentProblem: null,
+
+  // HR Monitor
+  lastRunResult: null,
+  lastTestResults: null,
+  lastSubmission: null,
 
   // UI
   sidebarOpen: true,
@@ -48,7 +89,7 @@ const initialState = {
 function reducer(state, action) {
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, user: action.payload, role: action.payload.role };
+      return { ...state, user: action.payload, role: action.payload?.role || null };
 
     case 'SET_ROOM':
       return { ...state, roomId: action.payload.roomId, roomCode: action.payload.roomCode, roomTitle: action.payload.title || '', createdBy: action.payload.createdBy || '' };
@@ -80,6 +121,18 @@ function reducer(state, action) {
     case 'SUBMIT_DONE':
       return { ...state, isSubmitting: false, submitResult: action.payload };
 
+    case 'RUN_TESTS_START':
+      return { ...state, isRunningTests: true, testResults: null };
+
+    case 'RUN_TESTS_SUCCESS':
+      return { ...state, isRunningTests: false, testResults: action.payload };
+
+    case 'RUN_TESTS_ERROR':
+      return { ...state, isRunningTests: false, error: action.payload };
+
+    case 'SET_TEST_RESULTS':
+      return { ...state, testResults: action.payload };
+
     case 'SET_TIMER':
       return { ...state, timerSeconds: action.payload };
 
@@ -107,6 +160,18 @@ function reducer(state, action) {
     case 'SET_SOCKET_CONNECTED':
       return { ...state, isSocketConnected: action.payload };
 
+    case 'SET_PROBLEM':
+      return { ...state, currentProblem: action.payload };
+
+    case 'SET_LAST_RUN_RESULT':
+      return { ...state, lastRunResult: action.payload };
+
+    case 'SET_LAST_TEST_RESULTS':
+      return { ...state, lastTestResults: action.payload };
+
+    case 'SET_LAST_SUBMISSION':
+      return { ...state, lastSubmission: action.payload };
+
     case 'TOGGLE_SIDEBAR':
       return { ...state, sidebarOpen: !state.sidebarOpen };
 
@@ -132,6 +197,45 @@ const InterviewContext = createContext(null);
 export function InterviewProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const timerRef = useRef(null);
+  const [isRestoringSession, setIsRestoringSession] = useState(true);
+
+  // ── Restore session from localStorage on mount ───────────────────────────
+  useEffect(() => {
+    const savedUser = readFromStorage(STORAGE_KEYS.USER);
+    const savedRoom = readFromStorage(STORAGE_KEYS.ROOM);
+
+    if (savedUser && savedUser.token) {
+      // Validate token is not obviously expired by checking its payload
+      try {
+        const payload = JSON.parse(atob(savedUser.token.split('.')[1]));
+        const isExpired = payload.exp * 1000 < Date.now();
+        if (isExpired) {
+          // Token expired — clear storage
+          removeFromStorage(STORAGE_KEYS.USER);
+          removeFromStorage(STORAGE_KEYS.ROOM);
+          localStorage.removeItem('token');
+          setIsRestoringSession(false);
+          return;
+        }
+      } catch {
+        // Malformed token — clear
+        removeFromStorage(STORAGE_KEYS.USER);
+        removeFromStorage(STORAGE_KEYS.ROOM);
+        localStorage.removeItem('token');
+        setIsRestoringSession(false);
+        return;
+      }
+
+      dispatch({ type: 'SET_USER', payload: savedUser });
+      localStorage.setItem('token', savedUser.token);
+
+      if (savedRoom && savedRoom.roomId) {
+        dispatch({ type: 'SET_ROOM', payload: savedRoom });
+      }
+    }
+
+    setIsRestoringSession(false);
+  }, []);
 
   // ── Timer management ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -162,10 +266,13 @@ export function InterviewProvider({ children }) {
 
     const onCodeChange = ({ code }) => dispatch({ type: 'SET_CODE', payload: code });
     const onLanguageChange = ({ language }) => dispatch({ type: 'SET_LANGUAGE', payload: language });
-    const onCodeOutput = (result) =>
+    const onCodeOutput = (result) => {
       dispatch({ type: 'RUN_SUCCESS', payload: { ...result, timestamp: new Date().toISOString() } });
+      dispatch({ type: 'SET_LAST_RUN_RESULT', payload: { ...result, timestamp: new Date().toISOString() } });
+    };
     const onParticipantJoined = (p) => dispatch({ type: 'PARTICIPANT_JOINED', payload: p });
     const onParticipantLeft = ({ id }) => dispatch({ type: 'PARTICIPANT_LEFT', payload: id });
+    const onParticipantsUpdate = ({ participants }) => dispatch({ type: 'SET_PARTICIPANTS', payload: participants });
     const onTimerSync = ({ seconds, running }) => {
       dispatch({ type: 'SET_TIMER', payload: seconds });
       if (running !== undefined) {
@@ -173,9 +280,20 @@ export function InterviewProvider({ children }) {
       }
     };
     const onInterviewEnd = () => {
+      removeFromStorage(STORAGE_KEYS.ROOM);
       socketService.disconnect();
       alert('The interview has been ended by the interviewer.');
       window.location.href = '/';
+    };
+    const onProblemUpdated = (problem) => {
+      dispatch({ type: 'SET_PROBLEM', payload: problem });
+    };
+    const onTestResultsUpdate = (results) => {
+      dispatch({ type: 'SET_TEST_RESULTS', payload: results });
+      dispatch({ type: 'SET_LAST_TEST_RESULTS', payload: results });
+    };
+    const onSubmissionReceived = (data) => {
+      dispatch({ type: 'SET_LAST_SUBMISSION', payload: data });
     };
 
     socketService.on(SOCKET_EVENTS.CONNECT, onConnect);
@@ -185,8 +303,12 @@ export function InterviewProvider({ children }) {
     socketService.on(SOCKET_EVENTS.CODE_OUTPUT, onCodeOutput);
     socketService.on(SOCKET_EVENTS.PARTICIPANT_JOINED, onParticipantJoined);
     socketService.on(SOCKET_EVENTS.PARTICIPANT_LEFT, onParticipantLeft);
+    socketService.on('participants_update', onParticipantsUpdate);
     socketService.on(SOCKET_EVENTS.TIMER_SYNC, onTimerSync);
     socketService.on('interview_end', onInterviewEnd);
+    socketService.on('problem_updated', onProblemUpdated);
+    socketService.on('test_results_update', onTestResultsUpdate);
+    socketService.on('submission_received', onSubmissionReceived);
 
     return () => {
       socketService.off(SOCKET_EVENTS.CONNECT, onConnect);
@@ -196,8 +318,12 @@ export function InterviewProvider({ children }) {
       socketService.off(SOCKET_EVENTS.CODE_OUTPUT, onCodeOutput);
       socketService.off(SOCKET_EVENTS.PARTICIPANT_JOINED, onParticipantJoined);
       socketService.off(SOCKET_EVENTS.PARTICIPANT_LEFT, onParticipantLeft);
+      socketService.off('participants_update', onParticipantsUpdate);
       socketService.off(SOCKET_EVENTS.TIMER_SYNC, onTimerSync);
       socketService.off('interview_end', onInterviewEnd);
+      socketService.off('problem_updated', onProblemUpdated);
+      socketService.off('test_results_update', onTestResultsUpdate);
+      socketService.off('submission_received', onSubmissionReceived);
     };
   }, []);
 
@@ -217,8 +343,19 @@ export function InterviewProvider({ children }) {
         throw new Error(data.error || 'Login failed');
       }
 
+      const userData = { ...data.user, token: data.token };
+
+      // Save to localStorage FIRST, then dispatch
       localStorage.setItem('token', data.token);
-      dispatch({ type: 'SET_USER', payload: data.user });
+      saveToStorage(STORAGE_KEYS.USER, userData);
+      
+      dispatch({ type: 'SET_USER', payload: userData });
+
+      // Return a promise that resolves after state update propagates
+      return new Promise((resolve) => {
+        // Use setTimeout(0) to ensure dispatch has been processed
+        setTimeout(resolve, 0);
+      });
     } catch (err) {
       dispatch({ type: 'SET_ERROR', payload: err.message });
       throw err;
@@ -227,9 +364,19 @@ export function InterviewProvider({ children }) {
 
   const joinRoom = useCallback((roomId, roomCode, title = '', createdBy = '') => {
     dispatch({ type: 'SET_ROOM', payload: { roomId, roomCode, title, createdBy } });
+
+    // Persist room data to localStorage
+    saveToStorage(STORAGE_KEYS.ROOM, { roomId, roomCode, title, createdBy });
+
     socketService.connect();
     socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, user: state.user });
   }, [state.user]);
+
+  const rejoinRoom = useCallback((roomId, roomCode, title, createdBy, user) => {
+    dispatch({ type: 'SET_ROOM', payload: { roomId, roomCode, title, createdBy } });
+    socketService.connect();
+    socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId, user });
+  }, []);
 
   const setLanguage = useCallback((lang) => {
     dispatch({ type: 'SET_LANGUAGE', payload: lang });
@@ -250,21 +397,59 @@ export function InterviewProvider({ children }) {
         type: 'RUN_SUCCESS',
         payload: { ...result, timestamp: new Date().toISOString() },
       });
+
+      // Also emit via socket so HR can see it
+      if (state.roomId) {
+        socketService.emit(SOCKET_EVENTS.RUN_CODE, {
+          language: state.language.id,
+          code: state.code,
+          roomId: state.roomId,
+          runType: 'run',
+        });
+      }
     } catch (err) {
       dispatch({ type: 'RUN_ERROR', payload: err.message });
     }
-  }, [state.language.id, state.code]);
+  }, [state.language.id, state.code, state.roomId]);
+
+  const runTests = useCallback(async () => {
+    if (!state.currentProblem?._id) return;
+    dispatch({ type: 'RUN_TESTS_START' });
+    try {
+      const result = await runTestsService(state.language.id, state.code, state.roomId, state.currentProblem._id);
+      dispatch({ type: 'RUN_TESTS_SUCCESS', payload: result });
+
+      // Also emit via socket so HR can see test results
+      if (state.roomId) {
+        socketService.emit('run_tests', {
+          language: state.language.id,
+          code: state.code,
+          roomId: state.roomId,
+          problemId: state.currentProblem._id,
+        });
+      }
+    } catch (err) {
+      dispatch({ type: 'RUN_TESTS_ERROR', payload: err.message });
+    }
+  }, [state.language.id, state.code, state.roomId, state.currentProblem]);
 
   const submitCode = useCallback(async () => {
     dispatch({ type: 'SUBMIT_START' });
     try {
       const result = await submitCodeService(state.language.id, state.code, state.roomId);
       dispatch({ type: 'SUBMIT_DONE', payload: result });
-      socketService.emit(SOCKET_EVENTS.RUN_CODE, { language: state.language.id, code: state.code, roomId: state.roomId });
+
+      // Emit submission event via socket
+      socketService.emit('code_submitted', {
+        code: state.code,
+        language: state.language.id,
+        roomId: state.roomId,
+        submittedBy: state.user?.name,
+      });
     } catch (err) {
       dispatch({ type: 'SUBMIT_DONE', payload: { success: false, message: err.message } });
     }
-  }, [state.language.id, state.code, state.roomId]);
+  }, [state.language.id, state.code, state.roomId, state.user]);
 
   const startTimer = useCallback(() => dispatch({ type: 'SET_TIMER_RUNNING', payload: true }), []);
   const pauseTimer = useCallback(() => dispatch({ type: 'SET_TIMER_RUNNING', payload: false }), []);
@@ -276,21 +461,44 @@ export function InterviewProvider({ children }) {
   const toggleSidebar = useCallback(() => dispatch({ type: 'TOGGLE_SIDEBAR' }), []);
   const setError = useCallback((msg) => dispatch({ type: 'SET_ERROR', payload: msg }), []);
   const clearError = useCallback(() => dispatch({ type: 'CLEAR_ERROR' }), []);
-  const reset = useCallback(() => dispatch({ type: 'RESET' }), []);
+
+  const reset = useCallback(() => {
+    removeFromStorage(STORAGE_KEYS.USER);
+    removeFromStorage(STORAGE_KEYS.ROOM);
+    localStorage.removeItem('token');
+    socketService.disconnect();
+    dispatch({ type: 'RESET' });
+  }, []);
 
   const endInterview = useCallback(() => {
     if (state.roomId) {
       socketService.emit('interview_end', { roomId: state.roomId });
     }
+    removeFromStorage(STORAGE_KEYS.ROOM);
   }, [state.roomId]);
+
+  const setCurrentProblem = useCallback((problem) => {
+    dispatch({ type: 'SET_PROBLEM', payload: problem });
+  }, []);
+
+  // Derived state
+  const isCandidateOnline = state.participants.some(
+    (p) => p.role === ROLES.CANDIDATE && p.online !== false
+  );
+  const onlineCount = state.participants.filter((p) => p.online !== false).length;
 
   const value = {
     ...state,
+    isRestoringSession,
+    isCandidateOnline,
+    onlineCount,
     login,
     joinRoom,
+    rejoinRoom,
     setLanguage,
     setCode,
     runCode,
+    runTests,
     submitCode,
     startTimer,
     pauseTimer,
@@ -300,6 +508,7 @@ export function InterviewProvider({ children }) {
     clearError,
     reset,
     endInterview,
+    setCurrentProblem,
   };
 
   return <InterviewContext.Provider value={value}>{children}</InterviewContext.Provider>;

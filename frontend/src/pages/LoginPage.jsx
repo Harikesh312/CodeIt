@@ -6,7 +6,7 @@ import { ROLES } from '../utils/constants';
 import Button from '../components/ui/Button';
 
 export default function LoginPage() {
-  const { login } = useInterview();
+  const { login, user, role } = useInterview();
   const navigate = useNavigate();
 
   const [selectedRole, setSelectedRole] = useState(null);
@@ -14,17 +14,28 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // If user is already logged in, redirect them
+  React.useEffect(() => {
+    if (user) {
+      navigate(role === ROLES.HR ? '/dashboard' : '/join', { replace: true });
+    }
+  }, [user, role, navigate]);
+
   const handleContinue = async () => {
     if (!selectedRole) { setError('Please select a role.'); return; }
     if (!name.trim()) { setError('Please enter your name.'); return; }
     setError('');
     setLoading(true);
 
-    // Simulate brief auth delay
-    await new Promise((r) => setTimeout(r, 600));
-    login(name.trim(), selectedRole);
-    setLoading(false);
-    navigate(selectedRole === ROLES.HR ? '/dashboard' : '/join');
+    try {
+      await login(name.trim(), selectedRole);
+      // Navigation happens after login() resolves — state is fully set
+      navigate(selectedRole === ROLES.HR ? '/dashboard' : '/join');
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const roles = [

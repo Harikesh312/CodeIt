@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy } from 'lucide-react';
+import { Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy, RefreshCw } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES } from '../utils/constants';
 import Badge from './ui/Badge';
@@ -95,8 +95,8 @@ export default function Navbar({ showTimer = false }) {
               <Wifi size={13} /> Live
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-gray-500">
-              <WifiOff size={13} /> Offline
+            <span className="flex items-center gap-1 text-amber-400 animate-pulse">
+              <RefreshCw size={13} className="animate-spin" /> Reconnecting…
             </span>
           )}
         </div>

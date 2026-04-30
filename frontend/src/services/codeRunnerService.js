@@ -1,13 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// codeRunnerService.js – Code execution stub
-//
-// HOW TO PLUG IN A REAL JUDGE:
-//   Option A – Judge0 API (self-hosted or hosted):
-//     const res = await fetch('https://judge0.example.com/submissions', { ... });
-//   Option B – Custom backend endpoint:
-//     const res = await fetch(`${API_URL}/api/run`, { method: 'POST', body: JSON.stringify({ language, code }) });
-//
-// Replace runCode() body below with the real implementation.
+// codeRunnerService.js – Code execution service
 // ─────────────────────────────────────────────────────────────────────────────
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -50,6 +42,39 @@ export async function runCode(language, code, roomId = null) {
       output: `Error executing code: ${error.message}`,
       error: true,
       executionTime: 0,
+    };
+  }
+}
+
+/**
+ * Run code against test cases.
+ *
+ * @param {string} language
+ * @param {string} code
+ * @param {string} roomId
+ * @param {string} problemId
+ * @returns {Promise<{ results: Array, summary: Object }>}
+ */
+export async function runTests(language, code, roomId, problemId) {
+  try {
+    const res = await fetch(`${API_URL}/code/run-tests`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ language, code, roomId, problemId }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Server error: ${res.status}`);
+    }
+
+    return await res.json();
+  } catch (error) {
+    return {
+      results: [],
+      summary: { total: 0, passed: 0, failed: 0, totalExecutionTime: 0 },
+      error: true,
+      errorMessage: error.message,
     };
   }
 }

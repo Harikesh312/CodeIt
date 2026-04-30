@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
+import { ROLES } from '../utils/constants';
 import Navbar from '../components/Navbar';
 import EditorPanel from '../components/EditorPanel';
 import OutputPanel from '../components/OutputPanel';
@@ -8,12 +9,20 @@ import VideoPanel from '../components/VideoPanel';
 import ControlBar from '../components/ControlBar';
 import Timer from '../components/Timer';
 import ParticipantsPanel from '../components/ParticipantsPanel';
+import ProblemPanel from '../components/ProblemPanel';
+import HRMonitorPanel from '../components/HRMonitorPanel';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function InterviewRoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const { user, roomId: contextRoomId, joinRoom, startTimer } = useInterview();
+  const {
+    user, role, roomId: contextRoomId, roomCode, joinRoom, rejoinRoom,
+    startTimer, isSocketConnected, isCandidateOnline, participants,
+  } = useInterview();
+
+  const [isRejoining, setIsRejoining] = useState(false);
+  const [showCandidateJoinBanner, setShowCandidateJoinBanner] = useState(false);
 
   // Guard: redirect if not authenticated
   useEffect(() => {
@@ -21,9 +30,22 @@ export default function InterviewRoomPage() {
       navigate('/', { replace: true });
       return;
     }
-    // Auto-join if navigated directly via URL (e.g., refresh)
+
+    // Auto-rejoin if we have room data in localStorage but context lost it (e.g. refresh)
     if (!contextRoomId && roomId) {
-      joinRoom(roomId, roomId.split('-')[1]?.toUpperCase() || 'LIVE', 'Technical Interview');
+      setIsRejoining(true);
+      try {
+        const savedRoom = JSON.parse(localStorage.getItem('codeit_room') || 'null');
+        if (savedRoom && savedRoom.roomId === roomId) {
+          rejoinRoom(savedRoom.roomId, savedRoom.roomCode, savedRoom.title, savedRoom.createdBy, user);
+        } else {
+          // No stored room data — try joining with basic info from URL
+          joinRoom(roomId, roomId.split('-')[1]?.toUpperCase() || 'LIVE', 'Technical Interview');
+        }
+      } catch {
+        joinRoom(roomId, roomId.split('-')[1]?.toUpperCase() || 'LIVE', 'Technical Interview');
+      }
+      setTimeout(() => setIsRejoining(false), 1000);
     }
   }, [user, contextRoomId, roomId]);
 
@@ -33,19 +55,45 @@ export default function InterviewRoomPage() {
     return () => clearTimeout(t);
   }, []);
 
-  if (!user) {
-    return <LoadingSpinner fullScreen text="Redirecting…" />;
+  // Show banner for HR when candidate hasn't joined yet
+  useEffect(() => {
+    if (role === ROLES.HR) {
+      setShowCandidateJoinBanner(!isCandidateOnline);
+    }
+  }, [role, isCandidateOnline]);
+
+  if (!user || isRejoining) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <LoadingSpinner size="lg" text={isRejoining ? 'Reconnecting to room…' : 'Redirecting…'} />
+      </div>
+    );
   }
+
+  const isHR = role === ROLES.HR;
+  const candidateName = participants.find(p => p.role === ROLES.CANDIDATE)?.name;
 
   return (
     <div className="h-screen bg-gray-950 flex flex-col overflow-hidden">
       {/* Top Navbar */}
       <Navbar showTimer />
 
+      {/* Candidate join banner for HR */}
+      {isHR && showCandidateJoinBanner && (
+        <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2.5 flex items-center justify-center gap-2 text-amber-300 text-sm animate-fade-in">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+          </span>
+          ⏳ Waiting for {candidateName || 'candidate'} to join the interview...
+        </div>
+      )}
+
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
-        {/* ── Left Panel: Video + Participants + Timer ───────────────────────── */}
+        {/* ── Left Panel: Problem + Video + Participants + Timer ─────────────── */}
         <aside className="w-64 xl:w-72 flex-shrink-0 border-r border-gray-800 bg-gray-900/40 overflow-y-auto p-3 space-y-3 hidden lg:block">
+          <ProblemPanel />
           <VideoPanel />
           <ParticipantsPanel />
           <Timer />
@@ -61,9 +109,9 @@ export default function InterviewRoomPage() {
           <ControlBar />
         </div>
 
-        {/* ── Right Panel: Output ─────────────────────────────────────────────── */}
+        {/* ── Right Panel: Output or HR Monitor ──────────────────────────────── */}
         <aside className="w-72 xl:w-80 flex-shrink-0 border-l border-gray-800 p-3 hidden md:block overflow-hidden">
-          <OutputPanel />
+          {isHR ? <HRMonitorPanel /> : <OutputPanel />}
         </aside>
       </div>
 

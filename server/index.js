@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth');
 const roomRoutes = require('./routes/rooms');
 const codeRoutes = require('./routes/code');
 const videoRoutes = require('./routes/video');
+const problemRoutes = require('./routes/problems');
 
 // Connect to MongoDB
 connectDB();
@@ -26,6 +27,9 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
   },
 });
+
+// Make io accessible to controllers via req.app.get('io')
+app.set('io', io);
 
 // Attach Socket handler
 socketHandler(io);
@@ -43,6 +47,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/rooms', roomRoutes);
 app.use('/api/code', codeRoutes);
 app.use('/api/video', videoRoutes);
+app.use('/api/problems', problemRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

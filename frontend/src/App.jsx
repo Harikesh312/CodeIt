@@ -1,15 +1,27 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { InterviewProvider, useInterview } from './context/InterviewContext';
+import { ToastProvider } from './components/ToastProvider';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import JoinRoomPage from './pages/JoinRoomPage';
 import InterviewRoomPage from './pages/InterviewRoomPage';
 import { ROLES } from './utils/constants';
+import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // ── Route guard: requires a logged-in user ───────────────────────────────────
 function ProtectedRoute({ children, requiredRole }) {
-  const { user, role } = useInterview();
+  const { user, role, isRestoringSession } = useInterview();
+
+  // Show loading spinner while session is being restored from localStorage
+  if (isRestoringSession) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <LoadingSpinner size="lg" text="Restoring session…" />
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/" replace />;
   if (requiredRole && role !== requiredRole) {
     return <Navigate to={role === ROLES.HR ? '/dashboard' : '/join'} replace />;
@@ -63,7 +75,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <InterviewProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
       </InterviewProvider>
     </BrowserRouter>
   );

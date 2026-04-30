@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Play, Send, ChevronDown, AlertTriangle, CheckCircle2, X } from 'lucide-react';
+import { Play, Send, ChevronDown, AlertTriangle, CheckCircle2, X, FlaskConical } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import Button from './ui/Button';
 
@@ -33,7 +33,7 @@ function SubmitConfirmModal({ onConfirm, onCancel }) {
 }
 
 export default function ControlBar() {
-  const { language, isRunning, isSubmitting, runCode, submitCode } = useInterview();
+  const { language, isRunning, isRunningTests, isSubmitting, runCode, runTests, submitCode, currentProblem } = useInterview();
   const [showConfirm, setShowConfirm] = useState(false);
   const [submitDone, setSubmitDone] = useState(false);
 
@@ -43,6 +43,8 @@ export default function ControlBar() {
     setSubmitDone(true);
     setTimeout(() => setSubmitDone(false), 4000);
   };
+
+  const hasTestCases = currentProblem?.testCases?.length > 0;
 
   return (
     <>
@@ -75,6 +77,21 @@ export default function ControlBar() {
             {isRunning ? 'Running…' : 'Run Code'}
           </Button>
 
+          {/* Run Tests — only if problem has test cases */}
+          {hasTestCases && (
+            <Button
+              variant="secondary"
+              icon={FlaskConical}
+              size="md"
+              loading={isRunningTests}
+              onClick={runTests}
+              id="run-tests-btn"
+              className="min-w-28"
+            >
+              {isRunningTests ? 'Running Tests…' : 'Run Tests'}
+            </Button>
+          )}
+
           {/* Submit */}
           {submitDone ? (
             <div className="flex items-center gap-1.5 text-emerald-400 text-sm font-medium px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
@@ -98,9 +115,11 @@ export default function ControlBar() {
 
         {/* Right: Status */}
         <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600">
-          <div className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-blue-500 animate-pulse' : 'bg-gray-700'}`} />
+          <div className={`w-1.5 h-1.5 rounded-full ${isRunning || isRunningTests ? 'bg-blue-500 animate-pulse' : 'bg-gray-700'}`} />
           {isRunning ? (
             <span className="text-blue-400">Executing…</span>
+          ) : isRunningTests ? (
+            <span className="text-blue-400">Testing…</span>
           ) : (
             <span>Ready</span>
           )}

@@ -1,4 +1,12 @@
-const fetch = require('node-fetch');
+// node-fetch v3 is ESM-only — use dynamic import
+let fetch;
+const getFetch = async () => {
+  if (!fetch) {
+    const mod = await import('node-fetch');
+    fetch = mod.default;
+  }
+  return fetch;
+};
 const Room = require('../models/Room');
 
 const createVideoRoom = async (req, res, next) => {
@@ -32,6 +40,7 @@ const createVideoRoom = async (req, res, next) => {
 
     const roomName = `codeit-${roomCode.toLowerCase()}`;
 
+    const fetch = await getFetch();
     const response = await fetch('https://api.daily.co/v1/rooms', {
       method: 'POST',
       headers: {
@@ -81,6 +90,7 @@ const deleteVideoRoom = async (req, res, next) => {
     }
 
     if (DAILY_API_KEY && DAILY_API_KEY !== 'your_daily_api_key_here' && roomName.startsWith('codeit-')) {
+      const fetch = await getFetch();
       const response = await fetch(`https://api.daily.co/v1/rooms/${roomName}`, {
         method: 'DELETE',
         headers: {
