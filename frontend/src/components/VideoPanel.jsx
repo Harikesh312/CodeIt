@@ -84,6 +84,7 @@ export default function VideoPanel() {
 
     console.log("Starting Jitsi manual initialization for room:", roomCode);
     let api = null;
+    let isMounted = true;
 
     const loadJitsiScript = () => {
       return new Promise((resolve, reject) => {
@@ -119,8 +120,10 @@ export default function VideoPanel() {
 
     const initMeeting = async () => {
       try {
-        setScriptError(false);
+        if (isMounted) setScriptError(false);
         const JitsiMeetExternalAPI = await loadJitsiScript();
+
+        if (!isMounted) return;
 
         if (!JitsiMeetExternalAPI) {
            throw new Error("JitsiMeetExternalAPI is undefined even after script load.");
@@ -129,6 +132,9 @@ export default function VideoPanel() {
         if (!jitsiContainerRef.current) {
           return;
         }
+
+        // Clear any existing iframes before creating a new one
+        jitsiContainerRef.current.innerHTML = '';
 
         const domain = 'meet.jit.si';
         const options = {
@@ -175,37 +181,48 @@ export default function VideoPanel() {
         };
 
         api = new JitsiMeetExternalAPI(domain, options);
+        
+        if (!isMounted) {
+          api.dispose();
+          return;
+        }
+
         setJitsiApi(api);
 
         // Force display name after join in case prejoin page cached old name
         api.addListener('videoConferenceJoined', () => {
+          if (!isMounted) return;
           api.executeCommand('displayName', user?.name || (role === 'hr' ? 'Interviewer' : 'Candidate'));
-          api.isAudioMuted().then(muted => setAudioMuted(muted));
-          api.isVideoMuted().then(muted => setVideoMuted(muted));
+          api.isAudioMuted().then(muted => { if (isMounted) setAudioMuted(muted); });
+          api.isVideoMuted().then(muted => { if (isMounted) setVideoMuted(muted); });
         });
 
         api.addListener('audioMuteStatusChanged', (payload) => {
-          setAudioMuted(payload.muted);
+          if (isMounted) setAudioMuted(payload.muted);
         });
 
         api.addListener('videoMuteStatusChanged', (payload) => {
-          setVideoMuted(payload.muted);
+          if (isMounted) setVideoMuted(payload.muted);
         });
 
       } catch (err) {
         console.error("Error during Jitsi initialization:", err);
-        setScriptError(true);
+        if (isMounted) setScriptError(true);
       }
     };
 
     initMeeting();
 
     return () => {
+      isMounted = false;
       if (api) {
         api.dispose();
       }
+      if (jitsiContainerRef.current) {
+        jitsiContainerRef.current.innerHTML = '';
+      }
     };
-  }, [roomCode, isInterviewActive, user?.name]);
+  }, [roomCode, isInterviewActive, user?.name, role]);
 
   const handleAudioToggle = () => {
     if (jitsiApi) {
