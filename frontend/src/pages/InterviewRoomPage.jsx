@@ -94,16 +94,16 @@ export default function InterviewRoomPage() {
         {/* ── Left Panel: Problem + Video + Participants + Timer ─────────────── */}
         <aside className="w-64 xl:w-72 flex-shrink-0 border-r border-gray-800 bg-gray-900/40 overflow-y-auto p-3 space-y-3 hidden lg:block">
           <ProblemPanel />
-          <VideoPanel />
+          {!isHR && <VideoPanel />}
           <ParticipantsPanel />
           <Timer />
         </aside>
 
-        {/* ── Center: Editor / HR Monitor ──────────────────────────────────────── */}
+        {/* ── Center: Editor / VideoPanel ──────────────────────────────────────── */}
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           {isHR ? (
-            <div className="flex-1 p-3 overflow-hidden bg-gray-950">
-              <HRMonitorPanel />
+            <div className="flex-1 p-3 overflow-hidden bg-gray-950 flex flex-col">
+              <VideoPanel isMainPanel />
             </div>
           ) : (
             <>
@@ -117,8 +117,12 @@ export default function InterviewRoomPage() {
           )}
         </div>
 
-        {/* ── Right Panel: Output ─────────────────────────────────────────────── */}
-        {!isHR && (
+        {/* ── Right Panel: Output / HR Monitor ────────────────────────────────── */}
+        {isHR ? (
+          <aside className="w-72 xl:w-80 flex-shrink-0 border-l border-gray-800 p-3 hidden md:block overflow-hidden overflow-y-auto bg-gray-900/40">
+            <HRMonitorPanel />
+          </aside>
+        ) : (
           <aside className="w-72 xl:w-80 flex-shrink-0 border-l border-gray-800 p-3 hidden md:block overflow-hidden">
             <OutputPanel />
           </aside>

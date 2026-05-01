@@ -4,7 +4,7 @@ import { useInterview } from '../context/InterviewContext';
 import socketService from '../services/socketService';
 import { ROLES } from '../utils/constants';
 
-export default function VideoPanel() {
+export default function VideoPanel({ isMainPanel = false }) {
   const { roomCode, role, participants, user } = useInterview();
   const [isInterviewActive, setIsInterviewActive] = useState(true);
   const [jitsiApi, setJitsiApi] = useState(null);
@@ -253,7 +253,7 @@ export default function VideoPanel() {
   return (
     <div
       ref={panelRef}
-      className={`bg-gray-900 flex flex-col ${isFullscreen ? '' : 'border border-gray-800 rounded-xl h-[320px]'}`}
+      className={`bg-gray-900 flex flex-col ${isFullscreen ? '' : 'border border-gray-800 rounded-xl'} ${!isFullscreen && !isMainPanel ? 'h-[320px]' : ''} ${!isFullscreen && isMainPanel ? 'h-full' : ''}`}
       style={panelStyle}
     >
       {/* Header */}
@@ -303,8 +303,8 @@ export default function VideoPanel() {
           </div>
         ) : (
           <>
-            {/* Audio Profile UI — hidden during fullscreen */}
-            {!isFullscreen && (
+            {/* Audio Profile UI — hidden during fullscreen or main panel */}
+            {!isFullscreen && !isMainPanel && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 z-10">
                 <div className="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mb-4 border border-gray-700 shadow-lg">
                   <User size={40} className="text-gray-400" />
@@ -326,9 +326,9 @@ export default function VideoPanel() {
               </div>
             )}
 
-            {/* Jitsi container — visible and interactive only in fullscreen */}
+            {/* Jitsi container — visible and interactive in fullscreen or main panel */}
             <div
-              className={isFullscreen
+              className={isFullscreen || isMainPanel
                 ? 'absolute inset-0 w-full h-full'
                 : 'absolute opacity-0 pointer-events-none w-[1px] h-[1px]'
               }
