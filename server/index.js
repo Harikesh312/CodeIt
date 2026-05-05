@@ -14,6 +14,25 @@ const codeRoutes = require('./routes/code');
 const videoRoutes = require('./routes/video');
 const problemRoutes = require('./routes/problems');
 
+// Allowed origins – always include localhost for dev, plus any production CLIENT_URL
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://codeit-vzw0.onrender.com',
+];
+if (process.env.CLIENT_URL) {
+  allowedOrigins.push(process.env.CLIENT_URL);
+}
+
+function corsOriginCheck(origin, callback) {
+  // Allow requests with no origin (e.g. server-to-server, mobile apps, curl)
+  if (!origin) return callback(null, true);
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+  return callback(new Error('Not allowed by CORS'));
+}
+
 // Connect to MongoDB
 connectDB();
 
@@ -23,7 +42,7 @@ const server = http.createServer(app);
 // Socket.IO Setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
   },
 });
@@ -36,7 +55,7 @@ socketHandler(io);
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: corsOriginCheck,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
 }));
