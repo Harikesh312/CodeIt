@@ -46,6 +46,7 @@ const initialState = {
   roomId: null,
   roomCode: null,
   roomTitle: '',
+  roomStatus: null,
   createdBy: '',
 
   // Editor
@@ -94,7 +95,10 @@ function reducer(state, action) {
       return { ...state, user: action.payload, role: action.payload?.role || null };
 
     case 'SET_ROOM':
-      return { ...state, roomId: action.payload.roomId, roomCode: action.payload.roomCode, roomTitle: action.payload.title || '', createdBy: action.payload.createdBy || '' };
+      return { ...state, roomId: action.payload.roomId, roomCode: action.payload.roomCode, roomTitle: action.payload.title || '', roomStatus: action.payload.status || state.roomStatus, createdBy: action.payload.createdBy || '' };
+
+    case 'SET_ROOM_STATUS':
+      return { ...state, roomStatus: action.payload };
 
     case 'SET_LANGUAGE': {
       const lang = action.payload;
@@ -525,6 +529,22 @@ export function InterviewProvider({ children }) {
     dispatch({ type: 'SET_PROBLEM', payload: problem });
   }, []);
 
+  const fetchRoomStatus = useCallback(async (roomId) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${API_URL}/rooms/${roomId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      dispatch({ type: 'SET_ROOM_STATUS', payload: data.status });
+      return data.status;
+    } catch {
+      return null;
+    }
+  }, []);
+
   // Derived state
   const isCandidateOnline = state.participants.some(
     (p) => p.role === ROLES.CANDIDATE && p.online !== false
@@ -553,6 +573,7 @@ export function InterviewProvider({ children }) {
     reset,
     endInterview,
     setCurrentProblem,
+    fetchRoomStatus,
   };
 
   return <InterviewContext.Provider value={value}>{children}</InterviewContext.Provider>;

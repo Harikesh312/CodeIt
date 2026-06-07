@@ -152,15 +152,20 @@ function RoomCard({ room, onEnter, onAddProblem }) {
   };
 
   const handleEnter = () => {
+    if (room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED) {
+      alert('This interview has ended and cannot be rejoined.');
+      return;
+    }
     joinRoom(room.id, room.code, room.title);
     navigate(`/room/${room.id}`);
   };
 
   const isActive = room.status === ROOM_STATUSES.ACTIVE;
   const isWaiting = room.status === ROOM_STATUSES.WAITING;
+  const isEnded = room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED;
 
   return (
-    <div className="group bg-gray-900 border border-gray-800 hover:border-gray-700 rounded-xl p-5 transition-all cursor-pointer hover:shadow-xl hover:shadow-black/20" onClick={handleEnter}>
+    <div className={`group bg-gray-900 border border-gray-800 ${isEnded ? 'opacity-60' : 'hover:border-gray-700 cursor-pointer hover:shadow-xl hover:shadow-black/20'} rounded-xl p-5 transition-all`} onClick={isEnded ? undefined : handleEnter}>
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-gray-100 font-semibold text-base truncate">{room.title}</h3>
@@ -187,7 +192,11 @@ function RoomCard({ room, onEnter, onAddProblem }) {
           </button>
         </div>
         <div className="flex items-center gap-2">
-          {(isActive || isWaiting) && (
+          {isEnded ? (
+            <span className="text-xs text-gray-500 italic px-2 py-1">
+              {room.status === ROOM_STATUSES.COMPLETED ? 'Interview Ended' : 'Cancelled'}
+            </span>
+          ) : (isActive || isWaiting) && (
             <>
               <Button
                 variant="ghost"

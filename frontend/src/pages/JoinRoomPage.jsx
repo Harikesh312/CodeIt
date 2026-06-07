@@ -30,6 +30,10 @@ export default function JoinRoomPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Room not found');
 
+      if (data.status === 'completed' || data.status === 'cancelled') {
+        throw new Error('This interview has already ended and cannot be joined.');
+      }
+
       joinRoom(data._id, data.code, data.title, data.createdBy);
       navigate(`/room/${data._id}`);
     } catch (err) {

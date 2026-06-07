@@ -5,8 +5,9 @@ import socketService from '../services/socketService';
 import { ROLES } from '../utils/constants';
 
 export default function VideoPanel({ isMainPanel = false }) {
-  const { roomCode, role, participants, user } = useInterview();
-  const [isInterviewActive, setIsInterviewActive] = useState(true);
+  const { roomCode, role, participants, user, roomStatus } = useInterview();
+  const isRoomEnded = roomStatus === 'completed' || roomStatus === 'cancelled';
+  const [isInterviewActive, setIsInterviewActive] = useState(!isRoomEnded);
   const [jitsiApi, setJitsiApi] = useState(null);
   const [audioMuted, setAudioMuted] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
@@ -34,6 +35,14 @@ export default function VideoPanel({ isMainPanel = false }) {
       socketService.off('interview_end', onInterviewEnd);
     };
   }, []);
+
+  // Sync isInterviewActive when roomStatus changes (e.g. fetched from API)
+  useEffect(() => {
+    if (roomStatus === 'completed' || roomStatus === 'cancelled') {
+      setIsInterviewActive(false);
+      setIsFullscreen(false);
+    }
+  }, [roomStatus]);
 
   // Sync fullscreen state when user presses Escape to exit native fullscreen
   useEffect(() => {

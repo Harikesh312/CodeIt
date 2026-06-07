@@ -5,7 +5,7 @@ import {
   XCircle, Copy, Check, ChevronRight, Trash2
 } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
-import { ROOM_STATUSES, MOCK_ROOMS } from '../utils/constants';
+import { ROOM_STATUSES } from '../utils/constants';
 import { generateRoomCode, copyToClipboard, timeAgo, getRoomInviteLink } from '../utils/helpers';
 import Badge from './ui/Badge';
 import Button from './ui/Button';
@@ -42,6 +42,10 @@ export default function Sidebar({ rooms = MOCK_ROOMS, onCreateRoom }) {
   };
 
   const handleEnterRoom = (room) => {
+    if (room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED) {
+      alert('This interview has ended and cannot be rejoined.');
+      return;
+    }
     joinRoom(room.id, room.code, room.title);
     navigate(`/room/${room.id}`);
   };
@@ -79,7 +83,7 @@ export default function Sidebar({ rooms = MOCK_ROOMS, onCreateRoom }) {
           rooms.map((room) => (
             <div
               key={room.id}
-              className="group p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 border border-gray-800 hover:border-gray-700 transition-all cursor-pointer"
+              className={`group p-3 rounded-lg bg-gray-800/50 border border-gray-800 transition-all ${room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED ? 'opacity-50 cursor-default' : 'hover:bg-gray-800 hover:border-gray-700 cursor-pointer'}`}
               onClick={() => handleEnterRoom(room)}
             >
               {/* Title row */}

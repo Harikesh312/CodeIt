@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useInterview } from '../context/InterviewContext';
-import { ROLES } from '../utils/constants';
+import { ROLES, ROOM_STATUSES } from '../utils/constants';
 import Navbar from '../components/Navbar';
 import EditorPanel from '../components/EditorPanel';
 import OutputPanel from '../components/OutputPanel';
@@ -17,12 +17,37 @@ export default function InterviewRoomPage() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const {
-    user, role, roomId: contextRoomId, roomCode, joinRoom, rejoinRoom,
-    startTimer, isSocketConnected, isCandidateOnline, participants,
+    user, role, roomId: contextRoomId, roomCode, roomStatus, joinRoom, rejoinRoom,
+    startTimer, isSocketConnected, isCandidateOnline, participants, fetchRoomStatus,
   } = useInterview();
 
   const [isRejoining, setIsRejoining] = useState(false);
   const [showCandidateJoinBanner, setShowCandidateJoinBanner] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+
+  // Guard: redirect if room is completed/cancelled
+  useEffect(() => {
+    if (!user || !roomId) {
+      setIsCheckingStatus(false);
+      return;
+    }
+
+    const checkRoomStatus = async () => {
+      const status = await fetchRoomStatus(roomId);
+      if (status === ROOM_STATUSES.COMPLETED || status === ROOM_STATUSES.CANCELLED) {
+        alert('This interview has already ended.');
+        if (role === ROLES.HR) {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/join', { replace: true });
+        }
+        return;
+      }
+      setIsCheckingStatus(false);
+    };
+
+    checkRoomStatus();
+  }, [user, roomId]);
 
   // Guard: redirect if not authenticated
   useEffect(() => {
@@ -62,10 +87,10 @@ export default function InterviewRoomPage() {
     }
   }, [role, isCandidateOnline]);
 
-  if (!user || isRejoining) {
+  if (!user || isRejoining || isCheckingStatus) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <LoadingSpinner size="lg" text={isRejoining ? 'Reconnecting to room…' : 'Redirecting…'} />
+        <LoadingSpinner size="lg" text={isRejoining ? 'Reconnecting to room…' : isCheckingStatus ? 'Verifying room status…' : 'Redirecting…'} />
       </div>
     );
   }
