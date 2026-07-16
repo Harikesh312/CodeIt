@@ -11,30 +11,35 @@ const TOAST_ICONS = {
 };
 
 const TOAST_STYLES = {
-  success: 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300',
-  error: 'bg-red-500/15 border-red-500/30 text-red-300',
-  info: 'bg-blue-500/15 border-blue-500/30 text-blue-300',
-  warning: 'bg-amber-500/15 border-amber-500/30 text-amber-300',
+  success: 'border',
+  error: 'border',
+  info: 'border',
+  warning: 'border',
 };
 
-const TOAST_ICON_COLORS = {
-  success: 'text-emerald-400',
-  error: 'text-red-400',
-  info: 'text-blue-400',
-  warning: 'text-amber-400',
+const TOAST_COLORS = {
+  success: { bg: 'rgba(16,185,129,0.12)', border: 'rgba(16,185,129,0.25)', text: '#10B981', icon: '#10B981' },
+  error:   { bg: 'rgba(239,68,68,0.12)',  border: 'rgba(239,68,68,0.25)',  text: '#F87171', icon: '#EF4444' },
+  info:    { bg: 'rgba(79,70,229,0.12)',   border: 'rgba(79,70,229,0.25)',  text: '#818CF8', icon: '#4F46E5' },
+  warning: { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.25)', text: '#FBBF24', icon: '#F59E0B' },
 };
 
 function Toast({ toast, onDismiss }) {
   const Icon = TOAST_ICONS[toast.type] || Info;
-  const style = TOAST_STYLES[toast.type] || TOAST_STYLES.info;
-  const iconColor = TOAST_ICON_COLORS[toast.type] || TOAST_ICON_COLORS.info;
+  const colors = TOAST_COLORS[toast.type] || TOAST_COLORS.info;
 
   return (
     <div
-      className={`flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm shadow-2xl shadow-black/30 animate-slide-up ${style}`}
+      className="flex items-start gap-3 px-4 py-3 rounded-xl border backdrop-blur-sm shadow-2xl animate-slide-up"
+      style={{
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
+        color: colors.text,
+        boxShadow: '0 8px 30px rgba(0,0,0,0.3)',
+      }}
       role="alert"
     >
-      <Icon size={16} className={`flex-shrink-0 mt-0.5 ${iconColor}`} />
+      <Icon size={16} className="flex-shrink-0 mt-0.5" style={{ color: colors.icon }} />
       <div className="flex-1 min-w-0">
         {toast.title && (
           <p className="text-sm font-semibold mb-0.5">{toast.title}</p>
@@ -43,7 +48,7 @@ function Toast({ toast, onDismiss }) {
       </div>
       <button
         onClick={() => onDismiss(toast.id)}
-        className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 transition-colors opacity-60 hover:opacity-100"
+        className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 transition-colors opacity-60 hover:opacity-100 cursor-pointer"
       >
         <X size={12} />
       </button>

@@ -2,6 +2,54 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────────────────────
+   CSS Custom Properties — Enterprise Color Palette
+───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --color-primary: #5B6CFF;
+  --color-primary-light: #7C3AED; /* Using this for gradient/hover */
+  --color-primary-dark: #4338CA;
+  --color-accent: #22D3EE;
+  --color-accent-secondary: #8B5CF6;
+  --color-bg: #0A0F1C;
+  --color-surface: #131E31;
+  --color-card: #18253B;
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-light: rgba(255, 255, 255, 0.1);
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-text-primary: #E2E8F0;
+  --color-text-secondary: #A5B4C7;
+  --color-text-muted: #7C8799;
+}
+
+body {
+  font-family: 'Geist', sans-serif;
+  font-weight: 450;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+h1 { font-weight: 700; font-size: 38px; line-height: 1.1; letter-spacing: -0.02em; }
+h2 { font-weight: 650; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
+h3 { font-weight: 600; font-size: 18px; line-height: 1.3; }
+p { font-weight: 450; font-size: 15px; line-height: 1.6; }
+label, .text-xs, .small-label { font-weight: 500; font-size: 13px; letter-spacing: 0.015em; }
+button { font-weight: 600; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
    Global resets & base styles
 ───────────────────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
@@ -18,8 +66,8 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: #09090f;
-  color: #e2e8f0;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
   line-height: 1.6;
   overflow-x: hidden;
 }
@@ -32,32 +80,67 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f0f17;
+  background: var(--color-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a3a;
+  background: var(--color-border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3a3a4a;
+  background: var(--color-border-light);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Focus ring reset (use component-level focus or ring utilities instead)
 ───────────────────────────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Range input accent (cross-browser)
+   Range input (cross-browser premium styling)
 ───────────────────────────────────────────────────────────────────────────── */
 input[type='range'] {
-  accent-color: #3b82f6;
-  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 999px;
   cursor: pointer;
+  outline: none;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-primary), 0 2px 8px rgba(79, 70, 229, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px var(--color-primary-light), 0 4px 12px rgba(79, 70, 229, 0.5);
+}
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 0 0 2px var(--color-primary), 0 2px 8px rgba(79, 70, 229, 0.4);
+  cursor: pointer;
+}
+input[type='range']::-moz-range-track {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 999px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -67,33 +150,30 @@ input[type='range'] {
   border-radius: 0 0 12px 12px;
 }
 .monaco-editor, .monaco-editor-background {
-  background-color: #0d0d14 !important;
+  background-color: #0d1117 !important;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Utility: text gradient
 ───────────────────────────────────────────────────────────────────────────── */
 .text-gradient {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Animate slide-up (for modals, toasts)
+   Animations
 ───────────────────────────────────────────────────────────────────────────── */
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-slide-up {
-  animation: slideUp 0.2s ease-out;
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Animate fade-in
-───────────────────────────────────────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -102,10 +182,36 @@ input[type='range'] {
   animation: fadeIn 0.3s ease-out;
 }
 
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(79, 70, 229, 0.08) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(79, 70, 229, 0.15); }
+}
+.animate-glow-pulse {
+  animation: glowPulse 3s ease-in-out infinite;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    Selection color
 ───────────────────────────────────────────────────────────────────────────── */
 ::selection {
-  background-color: #3b82f620;
-  color: #93c5fd;
+  background-color: rgba(79, 70, 229, 0.2);
+  color: #a5b4fc;
 }

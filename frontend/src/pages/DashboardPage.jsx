@@ -1,230 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Plus, Video, Clock, Users, CheckCircle2, XCircle,
-  Copy, Check, X, AlertCircle, Calendar, Timer as TimerIcon, FileText
-} from 'lucide-react';
+import { Users, Video, Clock, CheckCircle2, TrendingUp, PlayCircle, Plus, Activity, Calendar, Code2 } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
-import { ROLES, ROOM_STATUSES, MOCK_ROOMS } from '../utils/constants';
-import { generateRoomCode, copyToClipboard, timeAgo, getRoomInviteLink } from '../utils/helpers';
-import Navbar from '../components/Navbar';
-import Sidebar from '../components/Sidebar';
-import Badge from '../components/ui/Badge';
+import { ROLES, ROOM_STATUSES } from '../utils/constants';
 import Button from '../components/ui/Button';
-import ProblemCreatorModal from '../components/ProblemCreatorModal';
+import Badge from '../components/ui/Badge';
+import { timeAgo } from '../utils/helpers';
 
-const statusVariantMap = {
-  [ROOM_STATUSES.ACTIVE]: 'active',
-  [ROOM_STATUSES.WAITING]: 'waiting',
-  [ROOM_STATUSES.COMPLETED]: 'completed',
-  [ROOM_STATUSES.CANCELLED]: 'cancelled',
-};
-
-function SkeletonCard() {
+function StatCard({ label, value, icon: Icon, colorClass }) {
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 animate-pulse">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="h-5 bg-gray-800 rounded w-3/4 mb-2" />
-          <div className="h-3 bg-gray-800 rounded w-1/2" />
-        </div>
-        <div className="h-5 w-16 bg-gray-800 rounded-full ml-2" />
-      </div>
+    <div className="p-5 rounded-2xl flex flex-col transition-all duration-250 backdrop-blur-md hover:-translate-y-1 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-indigo-500/30" style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)' }}>
       <div className="flex items-center gap-4 mb-4">
-        <div className="h-3 w-16 bg-gray-800 rounded" />
-        <div className="h-3 w-12 bg-gray-800 rounded" />
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="h-6 w-20 bg-gray-800 rounded" />
-        <div className="h-8 w-24 bg-gray-800 rounded-lg" />
-      </div>
-    </div>
-  );
-}
-
-function CreateRoomModal({ onClose, onCreate }) {
-  const [title, setTitle] = useState('');
-  const [candidate, setCandidate] = useState('');
-  const [duration, setDuration] = useState(60);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleCreate = async () => {
-    if (!title.trim()) { setError('Room title is required.'); return; }
-    setLoading(true);
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/rooms`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title: title.trim(), candidate: candidate.trim(), duration }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create room');
-      onCreate({ ...data, id: data._id });
-      onClose();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl w-full max-w-md">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-          <h2 className="text-gray-100 font-semibold text-base">Create Interview Room</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-200 hover:bg-gray-800 transition-colors">
-            <X size={16} />
-          </button>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorClass}`}>
+          <Icon size={20} />
         </div>
-
-        <div className="p-6 space-y-5">
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-2">Position / Title *</label>
-            <input
-              id="room-title"
-              value={title}
-              onChange={(e) => { setTitle(e.target.value); setError(''); }}
-              placeholder="e.g. Senior Frontend Engineer"
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-2">Candidate Name</label>
-            <input
-              id="room-candidate"
-              value={candidate}
-              onChange={(e) => setCandidate(e.target.value)}
-              placeholder="e.g. Riya Sharma"
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-400 mb-2">
-              Duration: <span className="text-blue-400 font-semibold">{duration} min</span>
-            </label>
-            <input
-              type="range" min={15} max={120} step={15}
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full accent-blue-500"
-            />
-            <div className="flex justify-between text-xs text-gray-600 mt-1">
-              <span>15 min</span><span>120 min</span>
-            </div>
-          </div>
-
-          {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-              <AlertCircle size={14} />{error}
-            </div>
-          )}
-        </div>
-
-        <div className="flex gap-3 px-6 pb-6">
-          <Button variant="ghost" className="flex-1" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" icon={Plus} className="flex-1" loading={loading} onClick={handleCreate}>
-            {loading ? 'Creating…' : 'Create Room'}
-          </Button>
-        </div>
+        <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{label}</p>
       </div>
-    </div>
-  );
-}
-
-function RoomCard({ room, onEnter, onAddProblem }) {
-  const [copied, setCopied] = useState(false);
-  const navigate = useNavigate();
-  const { joinRoom } = useInterview();
-
-  const handleCopy = async (e) => {
-    e.stopPropagation();
-    const ok = await copyToClipboard(getRoomInviteLink(room.code));
-    if (ok) { setCopied(true); setTimeout(() => setCopied(false), 2000); }
-  };
-
-  const handleEnter = () => {
-    if (room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED) {
-      alert('This interview has ended and cannot be rejoined.');
-      return;
-    }
-    joinRoom(room.id, room.code, room.title);
-    navigate(`/room/${room.id}`);
-  };
-
-  const isActive = room.status === ROOM_STATUSES.ACTIVE;
-  const isWaiting = room.status === ROOM_STATUSES.WAITING;
-  const isEnded = room.status === ROOM_STATUSES.COMPLETED || room.status === ROOM_STATUSES.CANCELLED;
-
-  return (
-    <div className={`group bg-gray-900 border border-gray-800 ${isEnded ? 'opacity-60' : 'hover:border-gray-700 cursor-pointer hover:shadow-xl hover:shadow-black/20'} rounded-xl p-5 transition-all`} onClick={isEnded ? undefined : handleEnter}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-gray-100 font-semibold text-base truncate">{room.title}</h3>
-          {room.candidate && (
-            <p className="text-gray-500 text-sm mt-0.5 flex items-center gap-1.5">
-              <Users size={12} />
-              {room.candidate}
-            </p>
-          )}
-        </div>
-        <Badge variant={statusVariantMap[room.status]} dot className="flex-shrink-0 ml-2">{room.status}</Badge>
-      </div>
-
-      <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
-        <span className="flex items-center gap-1"><TimerIcon size={11} />{room.duration} min</span>
-        <span className="flex items-center gap-1"><Clock size={11} />{timeAgo(room.createdAt)}</span>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <code className="text-xs font-mono bg-gray-800 border border-gray-700 px-2 py-1 rounded-md text-gray-300">{room.code}</code>
-          <button onClick={handleCopy} className="p-1.5 rounded-md text-gray-600 hover:text-blue-400 border border-gray-800 hover:border-gray-700 transition-colors">
-            {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
-          {isEnded ? (
-            <span className="text-xs text-gray-500 italic px-2 py-1">
-              {room.status === ROOM_STATUSES.COMPLETED ? 'Interview Ended' : 'Cancelled'}
-            </span>
-          ) : (isActive || isWaiting) && (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={FileText}
-                onClick={(e) => { e.stopPropagation(); onAddProblem(room); }}
-              >
-                Problem
-              </Button>
-              <Button variant={isActive ? 'primary' : 'secondary'} size="sm" icon={Video} onClick={(e) => { e.stopPropagation(); handleEnter(); }}>
-                {isActive ? 'Join Live' : 'Enter Room'}
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
+      <h3 className="font-bold" style={{ color: 'var(--color-text-primary)' }}>{value}</h3>
     </div>
   );
 }
 
 export default function DashboardPage() {
   const { user, role, setError } = useInterview();
+  const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [loadingRooms, setLoadingRooms] = useState(true);
-  const [problemModal, setProblemModal] = useState(null); // { roomId, room }
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchRooms = async () => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -234,117 +37,215 @@ export default function DashboardPage() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to fetch rooms');
-        setRooms(data.map(r => ({ ...r, id: r._id })));
+        setRooms(data);
       } catch (err) {
         setError(err.message);
       } finally {
-        setLoadingRooms(false);
+        setLoading(false);
       }
     };
     if (user && role === ROLES.HR) {
-        fetchRooms();
+      fetchRooms();
     } else {
-        setLoadingRooms(false);
+      setLoading(false);
     }
   }, [user, role, setError]);
 
-  const handleCreateRoom = (newRoom) => {
-    setRooms((prev) => [newRoom, ...prev]);
-  };
+  const activeRooms = rooms.filter(r => r.status === ROOM_STATUSES.ACTIVE).length;
+  const completedRooms = rooms.filter(r => r.status === ROOM_STATUSES.COMPLETED).length;
+  const waitingRooms = rooms.filter(r => r.status === ROOM_STATUSES.WAITING);
+  const totalCandidates = new Set(rooms.map(r => r.candidate).filter(Boolean)).size;
 
-  const handleAddProblem = (room) => {
-    setProblemModal({ roomId: room.id, room });
-  };
+  const recentRooms = [...rooms].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+  const upcomingSessions = [...waitingRooms].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
 
-  const activeCount = rooms.filter((r) => r.status === ROOM_STATUSES.ACTIVE).length;
-  const waitingCount = rooms.filter((r) => r.status === ROOM_STATUSES.WAITING).length;
+  // Dummy data for Insights chart
+  const weeklyData = [
+    { day: 'M', value: 12 },
+    { day: 'T', value: 18 },
+    { day: 'W', value: 15 },
+    { day: 'T', value: 24 },
+    { day: 'F', value: 20 },
+    { day: 'S', value: 8 },
+    { day: 'S', value: 10 },
+  ];
+  const maxVal = Math.max(...weeklyData.map(d => d.value));
 
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col">
-      <Navbar />
-      {showCreateModal && (
-        <CreateRoomModal onClose={() => setShowCreateModal(false)} onCreate={handleCreateRoom} />
-      )}
-      {problemModal && (
-        <ProblemCreatorModal
-          onClose={() => setProblemModal(null)}
-          onSave={() => setProblemModal(null)}
-          roomId={problemModal.roomId}
-        />
-      )}
-
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar rooms={rooms} onCreateRoom={() => setShowCreateModal(true)} />
-
-        <main className="flex-1 overflow-y-auto p-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-              <p className="text-gray-500 text-sm mt-1">Welcome back, <span className="text-gray-300">{user?.name}</span></p>
-            </div>
-            <Button variant="primary" icon={Plus} onClick={() => setShowCreateModal(true)} id="dashboard-create-btn">
-              New Room
+    <div className="h-full flex flex-col space-y-8 animate-fade-in max-w-6xl mx-auto pb-10">
+      
+      {/* Premium Hero Section */}
+      <div className="relative p-8 md:p-10 rounded-2xl overflow-hidden flex items-center justify-between backdrop-blur-md" style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)', boxShadow: '0 8px 30px rgba(0,0,0,0.12)' }}>
+        <div className="relative z-10 max-w-xl">
+          <h1 style={{ color: 'var(--color-text-primary)' }}>
+            Welcome back, {user?.name?.split(' ')[0] || 'Interviewer'}
+          </h1>
+          <p className="mt-3 mb-6" style={{ color: 'var(--color-text-secondary)' }}>
+            Conduct secure technical interviews, evaluate candidates efficiently and collaborate in real time.
+          </p>
+          <div className="flex gap-4">
+            <Button variant="primary" icon={Plus} size="lg" onClick={() => navigate('/sessions')}>
+              Create Session
+            </Button>
+            <Button variant="secondary" size="lg" onClick={() => navigate('/sessions')} style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)' }}>
+              View Sessions
             </Button>
           </div>
+        </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            {[
-              { label: 'Total Rooms', value: rooms.length, icon: Video, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-              { label: 'Active Now', value: activeCount, icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-              { label: 'Waiting', value: waitingCount, icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-              { label: 'Completed', value: rooms.filter((r) => r.status === ROOM_STATUSES.COMPLETED).length, icon: Calendar, color: 'text-purple-400', bg: 'bg-purple-500/10' },
-            ].map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div key={stat.label} className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                  <div className={`w-8 h-8 ${stat.bg} rounded-lg flex items-center justify-center mb-3`}>
-                    <Icon size={16} className={stat.color} />
+        {/* Abstract watermark illustration */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.05] text-white hidden md:block">
+          <Code2 size={400} strokeWidth={1} style={{ transform: 'translateX(20%)' }} />
+        </div>
+      </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard label="Total Interviews" value={rooms.length.toString()} icon={Video} colorClass="bg-indigo-500/10 text-indigo-400" />
+        <StatCard label="Live Sessions" value={activeRooms.toString()} icon={PlayCircle} colorClass="bg-emerald-500/10 text-emerald-400" />
+        <StatCard label="Pending Invites" value={waitingRooms.length.toString()} icon={Clock} colorClass="bg-amber-500/10 text-amber-400" />
+        <StatCard label="Unique Candidates" value={totalCandidates.toString()} icon={Users} colorClass="bg-cyan-500/10 text-cyan-400" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column: Upcoming & Insights */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          {/* GitHub-style Performance Analytics */}
+          <div className="p-6 rounded-2xl transition-all duration-250 backdrop-blur-md hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-indigo-500/30" style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)', height: '220px' }}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Activity size={18} className="text-indigo-400" /> Performance Analytics
+              </h2>
+            </div>
+            
+            <div className="h-28 flex items-end justify-between gap-3 relative">
+              {/* Soft grid lines */}
+              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="w-full border-b" style={{ borderColor: 'rgba(255,255,255,0.03)' }} />
+                ))}
+              </div>
+              
+              {weeklyData.map((d, i) => {
+                const heightPct = (d.value / maxVal) * 100;
+                return (
+                  <div key={i} className="flex-1 flex flex-col justify-end items-center h-full relative z-10 group">
+                    <div 
+                      className="w-full max-w-[40px] rounded-t-md transition-all duration-300 group-hover:opacity-80" 
+                      style={{ 
+                        height: `${heightPct}%`, 
+                        background: 'linear-gradient(to top, rgba(91, 108, 255, 0.2), rgba(91, 108, 255, 0.8))'
+                      }} 
+                    />
+                    <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-xs py-1 px-2 rounded-md shadow-lg">
+                      {d.value}
+                    </div>
                   </div>
-                  <p className="text-gray-500 text-xs">{stat.label}</p>
-                  <p className="text-2xl font-bold text-white mt-0.5">{stat.value}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+            <div className="flex justify-between mt-3 px-2">
+              {weeklyData.map((d, i) => (
+                <span key={i} className="text-xs w-full max-w-[40px] text-center" style={{ color: 'var(--color-text-muted)' }}>{d.day}</span>
+              ))}
+            </div>
           </div>
 
-          {/* Rooms grid */}
-          <div>
-            <h2 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-4">
-              All Rooms ({rooms.length})
+          {/* Upcoming Sessions */}
+          <div className="p-6 rounded-2xl transition-all duration-250 backdrop-blur-md hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-indigo-500/30" style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)' }}>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Calendar size={18} className="text-indigo-400" /> Upcoming Sessions
+              </h2>
+              <button className="text-sm font-semibold transition-colors hover:underline" style={{ color: 'var(--color-primary-light)' }} onClick={() => navigate('/sessions')}>
+                View all
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {loading ? (
+                <div className="animate-pulse h-16 rounded-xl bg-slate-800/30 w-full" />
+              ) : upcomingSessions.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-6 text-center rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No upcoming interviews scheduled.</p>
+                </div>
+              ) : (
+                upcomingSessions.map(room => (
+                  <div key={room._id} className="flex items-center justify-between p-4 rounded-xl transition-all duration-250 hover:-translate-y-0.5 cursor-pointer" style={{ backgroundColor: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)' }} onClick={() => navigate('/sessions')}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-indigo-400 font-bold" style={{ backgroundColor: 'rgba(91,108,255,0.1)' }}>
+                        {room.candidate?.[0]?.toUpperCase() || 'C'}
+                      </div>
+                      <div>
+                        <h3 style={{ color: 'var(--color-text-primary)' }}>{room.title}</h3>
+                        <p className="mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{room.candidate || 'Unknown'} • {room.duration} min</p>
+                      </div>
+                    </div>
+                    <Badge variant="waiting" dot>Waiting</Badge>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+          
+        </div>
+
+        {/* Right Column: Session History */}
+        <div className="p-6 rounded-2xl flex flex-col h-full transition-all duration-250 backdrop-blur-md hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:border-indigo-500/30" style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)' }}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+              <TrendingUp size={18} className="text-emerald-400" /> Session History
             </h2>
-            {loadingRooms ? (
-              /* Skeleton loading cards */
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
-              </div>
-            ) : rooms.length === 0 ? (
-              <div className="border-2 border-dashed border-gray-800 rounded-2xl py-20 flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gray-900 flex items-center justify-center">
-                  <Video size={28} className="text-gray-700" />
-                </div>
-                <div className="text-center">
-                  <p className="text-gray-400 font-medium">No interview rooms yet</p>
-                  <p className="text-gray-600 text-sm mt-1">Create your first room to get started</p>
-                </div>
-                <Button variant="primary" icon={Plus} onClick={() => setShowCreateModal(true)}>Create Room</Button>
+          </div>
+          
+          <div className="space-y-4 flex-1">
+            {loading ? (
+              <div className="animate-pulse h-16 rounded-xl bg-slate-800/30 w-full" />
+            ) : recentRooms.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-6 text-center rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>No activity history yet.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                {rooms.map((room) => (
-                  <RoomCard
-                    key={room.id}
-                    room={room}
-                    onAddProblem={handleAddProblem}
-                  />
-                ))}
+              <div className="relative before:absolute before:inset-0 before:ml-[15px] before:w-px before:z-0 space-y-5 ml-1" style={{ before: { backgroundColor: 'var(--color-border)' } }}>
+                {recentRooms.map((room) => {
+                  let statusText = 'Created session';
+                  let StatusIcon = Plus;
+                  let iconColor = 'text-indigo-400';
+                  
+                  if (room.status === ROOM_STATUSES.COMPLETED) {
+                    statusText = 'Concluded interview';
+                    StatusIcon = CheckCircle2;
+                    iconColor = 'text-emerald-400';
+                  } else if (room.status === ROOM_STATUSES.ACTIVE) {
+                    statusText = 'Started live session';
+                    StatusIcon = PlayCircle;
+                    iconColor = 'text-cyan-400';
+                  }
+                  
+                  return (
+                    <div key={room._id} className="relative z-10 flex items-start gap-4">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full border shrink-0 mt-1" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+                        <StatusIcon size={14} className={iconColor} />
+                      </div>
+                      <div className="flex-1 rounded-xl p-3 border transition-all duration-250 hover:-translate-y-0.5 hover:shadow-md" style={{ backgroundColor: 'rgba(255,255,255,0.02)', borderColor: 'var(--color-border)' }}>
+                        <p className="font-semibold text-sm" style={{ color: 'var(--color-text-primary)' }}>
+                          {statusText} <span className="font-bold">{room.title}</span>
+                        </p>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>Candidate: {room.candidate || 'Unknown'}</p>
+                          <span className="text-[10px] uppercase font-semibold tracking-wider" style={{ color: 'var(--color-text-muted)' }}>{timeAgo(room.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
-        </main>
+        </div>
+
       </div>
     </div>
   );

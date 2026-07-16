@@ -20,15 +20,15 @@ export default function LoadingSpinner({ size = 'md', text, fullScreen = false, 
   const spinner = (
     <div className={`flex flex-col items-center gap-3 ${className}`}>
       <div
-        className={`${sizes[size]} rounded-full border-gray-700 border-t-blue-500 animate-spin`}
+        className={`${sizes[size]} rounded-full border-[#283548] border-t-[#4F46E5] animate-spin`}
       />
-      {text && <p className="text-gray-400 text-sm">{text}</p>}
+      {text && <p className="text-[#94A3B8] text-sm">{text}</p>}
     </div>
   );
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-gray-950/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-[#0B1220]/80 backdrop-blur-sm flex items-center justify-center z-50">
         {spinner}
       </div>
     );

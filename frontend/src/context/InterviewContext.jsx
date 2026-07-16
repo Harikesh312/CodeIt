@@ -226,7 +226,10 @@ export function InterviewProvider({ children }) {
     if (savedUser && savedUser.token) {
       // Validate token is not obviously expired by checking its payload
       try {
-        const payload = JSON.parse(atob(savedUser.token.split('.')[1]));
+        const parts = savedUser.token.split('.');
+        if (parts.length !== 3) throw new Error('Malformed token structure');
+        const payload = JSON.parse(atob(parts[1]));
+        if (!payload.exp) throw new Error('Token missing expiration');
         const isExpired = payload.exp * 1000 < Date.now();
         if (isExpired) {
           // Token expired — clear storage
@@ -237,7 +240,7 @@ export function InterviewProvider({ children }) {
           return;
         }
       } catch {
-        // Malformed token — clear
+        // Malformed or invalid token — clear and start fresh
         removeFromStorage(STORAGE_KEYS.USER);
         removeFromStorage(STORAGE_KEYS.ROOM);
         localStorage.removeItem('token');
@@ -369,13 +372,13 @@ export function InterviewProvider({ children }) {
   }, [state.currentProblem, state.role, state.language.id, lastProblemId]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
-  const login = useCallback(async (name, role) => {
+  const login = useCallback(async (email, password) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, role }),
+        body: JSON.stringify({ email, password }),
       });
       
       const data = await res.json();
@@ -392,14 +395,41 @@ export function InterviewProvider({ children }) {
       
       dispatch({ type: 'SET_USER', payload: userData });
 
-      // Return a promise that resolves after state update propagates
-      return new Promise((resolve) => {
-        // Use setTimeout(0) to ensure dispatch has been processed
-        setTimeout(resolve, 0);
-      });
+      return new Promise((resolve) => setTimeout(resolve, 0));
     } catch (err) {
-      dispatch({ type: 'SET_ERROR', payload: err.message });
-      throw err;
+      const errorMessage = err.message || 'Authentication failed. Please check your connection and try again.';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      throw new Error(errorMessage);
+    }
+  }, []);
+
+  const registerUser = useCallback(async (name, email, password, role) => {
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const res = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      const userData = { ...data.user, token: data.token };
+
+      localStorage.setItem('token', data.token);
+      saveToStorage(STORAGE_KEYS.USER, userData);
+      
+      dispatch({ type: 'SET_USER', payload: userData });
+
+      return new Promise((resolve) => setTimeout(resolve, 0));
+    } catch (err) {
+      const errorMessage = err.message || 'Registration failed. Please check your connection and try again.';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      throw new Error(errorMessage);
     }
   }, []);
 
@@ -557,6 +587,7 @@ export function InterviewProvider({ children }) {
     isCandidateOnline,
     onlineCount,
     login,
+    registerUser,
     joinRoom,
     rejoinRoom,
     setLanguage,

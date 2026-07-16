@@ -5,63 +5,69 @@ import { Loader2 } from 'lucide-react';
  * Reusable Button component.
  *
  * Props:
- *   variant  – 'primary' | 'secondary' | 'danger' | 'ghost' | 'success'
+ *   variant  – 'primary' | 'secondary' | 'danger' | 'ghost'
  *   size     – 'sm' | 'md' | 'lg'
  *   loading  – boolean
  *   icon     – Lucide icon component (rendered left of children)
  *   iconRight– Lucide icon component (rendered right of children)
  *   className– extra Tailwind classes
- *   ...rest  – all native button attributes
+ *   ...props – all native button attributes
  */
-export default function Button({
-  children,
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  icon: Icon,
+const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'md', 
+  className = '', 
+  loading = false, 
+  icon: Icon, 
   iconRight: IconRight,
-  className = '',
   disabled,
-  ...rest
-}) {
-  const base =
-    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-950 select-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
-
+  ...props 
+}) => {
+  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-[14px]';
+  
   const variants = {
-    primary:
-      'bg-blue-600 hover:bg-blue-500 text-white focus:ring-blue-500 shadow-lg shadow-blue-500/20',
-    secondary:
-      'bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 focus:ring-gray-600',
-    danger:
-      'bg-red-600 hover:bg-red-500 text-white focus:ring-red-500 shadow-lg shadow-red-500/20',
-    ghost:
-      'bg-transparent hover:bg-gray-800 text-gray-400 hover:text-gray-200 focus:ring-gray-600',
-    success:
-      'bg-emerald-600 hover:bg-emerald-500 text-white focus:ring-emerald-500 shadow-lg shadow-emerald-500/20',
+    primary: 'text-white border-transparent focus:ring-indigo-500 hover:-translate-y-0.5',
+    secondary: 'bg-slate-800/50 text-slate-200 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600 focus:ring-slate-500',
+    danger: 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20 hover:border-rose-500/30 focus:ring-rose-500',
+    ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-white/5 focus:ring-slate-500',
   };
+
+  const primaryStyle = variant === 'primary' ? {
+    background: 'linear-gradient(to right, var(--color-primary), var(--color-primary-light))',
+    boxShadow: '0 4px 14px rgba(91, 108, 255, 0.25)'
+  } : {};
+
+  const hoverClasses = variant === 'primary' 
+    ? 'hover:shadow-[0_0_15px_rgba(91,108,255,0.4)] hover:brightness-110' 
+    : '';
 
   const sizes = {
-    sm: 'text-xs px-3 py-1.5 h-7',
-    md: 'text-sm px-4 py-2 h-9',
-    lg: 'text-base px-6 py-2.5 h-11',
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base',
   };
 
-  const iconSizes = { sm: 14, md: 16, lg: 18 };
-  const iconSize = iconSizes[size];
+  const isDisabled = disabled || loading;
 
   return (
-    <button
-      className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
-      disabled={disabled || loading}
-      {...rest}
+    <button 
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${hoverClasses} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      disabled={isDisabled}
+      style={primaryStyle}
+      {...props}
     >
       {loading ? (
-        <Loader2 size={iconSize} className="animate-spin" />
+        <Loader2 className="animate-spin mr-2" size={size === 'sm' ? 14 : 18} />
       ) : Icon ? (
-        <Icon size={iconSize} />
+        <Icon className="mr-2" size={size === 'sm' ? 14 : 18} />
       ) : null}
       {children}
-      {!loading && IconRight && <IconRight size={iconSize} />}
+      {IconRight && !loading && (
+        <IconRight className="ml-2" size={size === 'sm' ? 14 : 18} />
+      )}
     </button>
   );
-}
+};
+
+export default Button;

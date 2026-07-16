@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Code2, Briefcase, UserCheck, ArrowRight, AlertCircle } from 'lucide-react';
+import { Code2, Briefcase, UserCheck, ArrowRight, AlertCircle, Mail, Lock, User as UserIcon } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES } from '../utils/constants';
 import Button from '../components/ui/Button';
 
 export default function LoginPage() {
-  const { login, user, role } = useInterview();
+  const { login, registerUser, user, role } = useInterview();
   const navigate = useNavigate();
 
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [isLogin, setIsLogin] = useState(true);
+  const [selectedRole, setSelectedRole] = useState(ROLES.HR);
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -21,142 +24,174 @@ export default function LoginPage() {
     }
   }, [user, role, navigate]);
 
-  const handleContinue = async () => {
-    if (!selectedRole) { setError('Please select a role.'); return; }
-    if (!name.trim()) { setError('Please enter your name.'); return; }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError('');
+    
+    if (isLogin) {
+      if (!email.trim() || !password.trim()) {
+        setError('Email and password are required.');
+        return;
+      }
+    } else {
+      if (!name.trim() || !email.trim() || !password.trim()) {
+        setError('All fields are required.');
+        return;
+      }
+    }
+    
     setLoading(true);
 
     try {
-      await login(name.trim(), selectedRole);
-      // Navigation happens after login() resolves — state is fully set
-      navigate(selectedRole === ROLES.HR ? '/dashboard' : '/join');
+      if (isLogin) {
+        await login(email.trim(), password);
+      } else {
+        await registerUser(name.trim(), email.trim(), password, selectedRole);
+      }
+      // Navigation handled by effect or context
     } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || 'Authentication failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const roles = [
-    {
-      id: ROLES.HR,
-      label: 'Interviewer',
-      subtitle: 'Create & manage interview rooms',
-      icon: Briefcase,
-      color: 'blue',
-      accent: 'border-blue-500 bg-blue-500/10',
-      ring: 'ring-blue-500/40',
-      iconBg: 'bg-blue-600',
-    },
-    {
-      id: ROLES.CANDIDATE,
-      label: 'Candidate',
-      subtitle: 'Join a room with your invite code',
-      icon: UserCheck,
-      color: 'violet',
-      accent: 'border-violet-500 bg-violet-500/10',
-      ring: 'ring-violet-500/40',
-      iconBg: 'bg-violet-600',
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
       {/* Ambient background blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-blue-600/10 blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-violet-600/10 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-600/5 blur-3xl" />
+        <div className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-30" style={{ background: 'radial-gradient(circle, var(--color-primary) 0%, transparent 70%)' }} />
+        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full blur-3xl opacity-20" style={{ background: 'radial-gradient(circle, var(--color-accent) 0%, transparent 70%)' }} />
       </div>
 
       <div className="w-full max-w-md z-10">
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="bg-blue-600 p-3 rounded-2xl shadow-2xl shadow-blue-500/30 mb-4">
-            <Code2 size={32} className="text-white" />
+          <div className="p-4 rounded-2xl shadow-2xl mb-5 animate-glow-pulse" style={{ backgroundColor: 'var(--color-primary)', boxShadow: '0 0 40px rgba(91,108,255,0.3)' }}>
+            <Code2 size={36} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">
-            Code<span className="text-blue-400">It</span>
+          <h1 className="text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
+            Code<span style={{ color: 'var(--color-primary-light)' }}>It</span>
           </h1>
-          <p className="text-gray-400 mt-2 text-center text-sm">
-            Real-time technical interview platform
+          <p className="mt-3 text-center text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
+            Enterprise Technical Interview Suite
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 shadow-2xl">
-          <h2 className="text-gray-200 font-semibold text-lg mb-5">Get Started</h2>
-
-          {/* Role selection */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {roles.map((r) => {
-              const Icon = r.icon;
-              const isSelected = selectedRole === r.id;
-              return (
-                <button
-                  key={r.id}
-                  onClick={() => { setSelectedRole(r.id); setError(''); }}
-                  className={`flex flex-col items-center gap-2.5 p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                    isSelected
-                      ? `${r.accent} ${r.ring} ring-2`
-                      : 'border-gray-800 bg-gray-800/30 hover:border-gray-700 hover:bg-gray-800/60'
-                  }`}
-                >
-                  <div className={`p-2.5 rounded-xl ${isSelected ? r.iconBg : 'bg-gray-700'} transition-colors`}>
-                    <Icon size={20} className="text-white" />
-                  </div>
-                  <div className="text-center">
-                    <p className={`text-sm font-semibold ${isSelected ? 'text-white' : 'text-gray-300'}`}>
-                      {r.label}
-                    </p>
-                    <p className="text-gray-500 text-xs mt-0.5 leading-tight">{r.subtitle}</p>
-                  </div>
-                </button>
-              );
-            })}
+        <div className="rounded-2xl p-8 shadow-2xl animate-fade-in" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+          <div className="flex flex-col items-center mb-8">
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+              {isLogin ? 'Welcome back' : 'Create an account'}
+            </h2>
+            <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
+              {isLogin ? 'Enter your credentials to continue' : 'Join our premium platform'}
+            </p>
           </div>
 
-          {/* Name input */}
-          <div className="mb-5">
-            <label htmlFor="login-name" className="block text-xs font-medium text-gray-400 mb-2">
-              Your Name
-            </label>
-            <input
-              id="login-name"
-              type="text"
-              value={name}
-              onChange={(e) => { setName(e.target.value); setError(''); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
-              placeholder="Enter your full name"
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-600 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/40 transition-all"
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {!isLogin && (
+              <div className="space-y-4">
+                {/* Role selection */}
+                <div className="flex gap-4 p-1 rounded-xl" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole(ROLES.HR)}
+                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                      selectedRole === ROLES.HR ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Briefcase size={16} /> Interviewer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole(ROLES.CANDIDATE)}
+                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                      selectedRole === ROLES.CANDIDATE ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <UserCheck size={16} /> Candidate
+                  </button>
+                </div>
 
-          {/* Error */}
-          {error && (
-            <div className="flex items-center gap-2 text-red-400 text-sm mb-4 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
-              <AlertCircle size={14} />
-              {error}
+                <div>
+                  <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Full Name</label>
+                  <div className="relative">
+                    <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => { setName(e.target.value); setError(''); }}
+                      placeholder="John Doe"
+                      className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Email Address</label>
+              <div className="relative">
+                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                  placeholder="you@company.com"
+                  className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
+                />
+              </div>
             </div>
-          )}
 
-          {/* Continue button */}
-          <Button
-            id="login-continue-btn"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            loading={loading}
-            iconRight={ArrowRight}
-            onClick={handleContinue}
-          >
-            {loading ? 'Signing in…' : 'Continue'}
-          </Button>
+            <div>
+              <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Password</label>
+              <div className="relative">
+                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
+                />
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-red-500/10 border border-red-500/20 text-red-400">
+                <AlertCircle size={15} />
+                {error}
+              </div>
+            )}
+
+            {/* Continue button */}
+            <Button
+              type="submit"
+              variant="primary"
+              size="xl"
+              className="w-full mt-2"
+              loading={loading}
+              iconRight={ArrowRight}
+            >
+              {loading ? (isLogin ? 'Signing in…' : 'Creating account…') : (isLogin ? 'Sign In' : 'Create Account')}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-slate-400">
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <button
+              onClick={() => { setIsLogin(!isLogin); setError(''); }}
+              className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+            >
+              {isLogin ? 'Sign up' : 'Sign in'}
+            </button>
+          </div>
         </div>
 
-        <p className="text-gray-700 text-xs text-center mt-6">
-          CodeIt · Real-time coding interviews
+        <p className="text-xs text-center mt-8 font-medium text-slate-500">
+          CodeIt · Enterprise Interview Platform
         </p>
       </div>
     </div>

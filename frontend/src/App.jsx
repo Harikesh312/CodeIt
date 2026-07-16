@@ -6,6 +6,10 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import JoinRoomPage from './pages/JoinRoomPage';
 import InterviewRoomPage from './pages/InterviewRoomPage';
+import SessionsPage from './pages/SessionsPage';
+import ProfilePage from './pages/ProfilePage';
+import SettingsPage from './pages/SettingsPage';
+import HRLayout from './components/HRLayout';
 import { ROLES } from './utils/constants';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
@@ -16,7 +20,7 @@ function ProtectedRoute({ children, requiredRole }) {
   // Show loading spinner while session is being restored from localStorage
   if (isRestoringSession) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0B1220' }}>
         <LoadingSpinner size="lg" text="Restoring session…" />
       </div>
     );
@@ -34,16 +38,6 @@ function AppRoutes() {
     <Routes>
       {/* Public */}
       <Route path="/" element={<LoginPage />} />
-
-      {/* HR only */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute requiredRole={ROLES.HR}>
-            <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
 
       {/* Candidate only */}
       <Route
@@ -64,6 +58,20 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* HR only (Layout routes) */}
+      <Route
+        element={
+          <ProtectedRoute requiredRole={ROLES.HR}>
+            <HRLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/sessions" element={<SessionsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/settings" element={<SettingsPage />} />
+      </Route>
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
