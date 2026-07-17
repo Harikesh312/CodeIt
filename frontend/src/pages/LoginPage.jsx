@@ -17,12 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If user is already logged in, redirect them
-  React.useEffect(() => {
-    if (user) {
-      navigate(role === ROLES.HR ? '/dashboard' : '/join', { replace: true });
-    }
-  }, [user, role, navigate]);
+  // Removed auto-redirect. Users stay on Landing Page until they click "Go to Dashboard"
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,114 +75,144 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="rounded-2xl p-8 shadow-2xl animate-fade-in" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
-          <div className="flex flex-col items-center mb-8">
-            <h2 className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-              {isLogin ? 'Welcome back' : 'Create an account'}
-            </h2>
-            <p className="text-sm mt-2" style={{ color: 'var(--color-text-muted)' }}>
-              {isLogin ? 'Enter your credentials to continue' : 'Join our premium platform'}
-            </p>
-          </div>
+          {user ? (
+            <div className="flex flex-col items-center mb-8">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-4" style={{ backgroundColor: 'var(--color-primary)' }}>
+                {user.name?.[0]?.toUpperCase() ?? 'U'}
+              </div>
+              <h2 className="text-2xl font-bold text-center" style={{ color: 'var(--color-text-primary)' }}>
+                Welcome back, {user.name?.split(' ')[0]}
+              </h2>
+              <p className="text-sm mt-2 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                You are currently signed in.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center mb-8">
+              <h2 className="text-2xl font-bold text-center" style={{ color: 'var(--color-text-primary)' }}>
+                {isLogin ? 'Welcome back' : 'Create an account'}
+              </h2>
+              <p className="text-sm mt-2 text-center" style={{ color: 'var(--color-text-muted)' }}>
+                {isLogin ? 'Enter your credentials to continue' : 'Join our premium platform'}
+              </p>
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {!isLogin && (
-              <div className="space-y-4">
-                {/* Role selection */}
-                <div className="flex gap-4 p-1 rounded-xl" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRole(ROLES.HR)}
-                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                      selectedRole === ROLES.HR ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <Briefcase size={16} /> Interviewer
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedRole(ROLES.CANDIDATE)}
-                    className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                      selectedRole === ROLES.CANDIDATE ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    <UserCheck size={16} /> Candidate
-                  </button>
-                </div>
+          {!user ? (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {!isLogin && (
+                  <div className="space-y-4">
+                    {/* Role selection */}
+                    <div className="flex gap-4 p-1 rounded-xl" style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRole(ROLES.HR)}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                          selectedRole === ROLES.HR ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        <Briefcase size={16} /> Interviewer
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRole(ROLES.CANDIDATE)}
+                        className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                          selectedRole === ROLES.CANDIDATE ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        <UserCheck size={16} /> Candidate
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Full Name</label>
+                      <div className="relative">
+                        <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => { setName(e.target.value); setError(''); }}
+                          placeholder="John Doe"
+                          className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
-                  <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Full Name</label>
+                  <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Email Address</label>
                   <div className="relative">
-                    <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => { setName(e.target.value); setError(''); }}
-                      placeholder="John Doe"
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                      placeholder="you@company.com"
                       className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
                     />
                   </div>
                 </div>
-              </div>
-            )}
 
-            <div>
-              <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Email Address</label>
-              <div className="relative">
-                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  placeholder="you@company.com"
-                  className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
-                />
+                <div>
+                  <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Password</label>
+                  <div className="relative">
+                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                      placeholder="••••••••"
+                      className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
+                    />
+                  </div>
+                </div>
+
+                {/* Error */}
+                {error && (
+                  <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-red-500/10 border border-red-500/20 text-red-400">
+                    <AlertCircle size={15} />
+                    {error}
+                  </div>
+                )}
+
+                {/* Continue button */}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="xl"
+                  className="w-full mt-2"
+                  loading={loading}
+                  iconRight={ArrowRight}
+                >
+                  {loading ? (isLogin ? 'Signing in…' : 'Creating account…') : (isLogin ? 'Sign In' : 'Create Account')}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center text-sm text-slate-400">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                  className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                  {isLogin ? 'Sign up' : 'Sign in'}
+                </button>
               </div>
+            </>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <Button
+                variant="primary"
+                size="xl"
+                className="w-full"
+                iconRight={ArrowRight}
+                onClick={() => navigate(role === ROLES.HR ? '/dashboard' : '/join')}
+              >
+                Go to Dashboard
+              </Button>
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold mb-2 uppercase tracking-wider text-slate-400">Password</label>
-              <div className="relative">
-                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                  placeholder="••••••••"
-                  className="w-full rounded-xl pl-11 pr-4 py-3.5 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100"
-                />
-              </div>
-            </div>
-
-            {/* Error */}
-            {error && (
-              <div className="flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-red-500/10 border border-red-500/20 text-red-400">
-                <AlertCircle size={15} />
-                {error}
-              </div>
-            )}
-
-            {/* Continue button */}
-            <Button
-              type="submit"
-              variant="primary"
-              size="xl"
-              className="w-full mt-2"
-              loading={loading}
-              iconRight={ArrowRight}
-            >
-              {loading ? (isLogin ? 'Signing in…' : 'Creating account…') : (isLogin ? 'Sign In' : 'Create Account')}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-sm text-slate-400">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <button
-              onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              {isLogin ? 'Sign up' : 'Sign in'}
-            </button>
-          </div>
+          )}
         </div>
 
         <p className="text-xs text-center mt-8 font-medium text-slate-500">

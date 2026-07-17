@@ -24,10 +24,10 @@ const Button = ({
   disabled,
   ...props 
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-[14px]';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 rounded-[14px] button-premium';
   
   const variants = {
-    primary: 'text-white border-transparent focus:ring-indigo-500 hover:-translate-y-0.5',
+    primary: 'text-white border-transparent focus:ring-indigo-500',
     secondary: 'bg-slate-800/50 text-slate-200 border border-slate-700/50 hover:bg-slate-800 hover:border-slate-600 focus:ring-slate-500',
     danger: 'bg-rose-500/10 text-rose-500 border border-rose-500/20 hover:bg-rose-500/20 hover:border-rose-500/30 focus:ring-rose-500',
     ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-white/5 focus:ring-slate-500',

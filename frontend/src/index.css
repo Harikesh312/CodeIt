@@ -15,12 +15,31 @@
   --color-card: #18253B;
   --color-border: rgba(255, 255, 255, 0.07);
   --color-border-light: rgba(255, 255, 255, 0.1);
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-danger: #EF4444;
-  --color-text-primary: #E2E8F0;
+  --color-success: #10B981; /* Emerald */
+  --color-warning: #F59E0B; /* Amber */
+  --color-danger: #F43F5E; /* Rose */
+  --color-info: #0EA5E9; /* Sky Blue */
+  --color-analytics: #06B6D4; /* Cyan */
+  --color-history: #64748B; /* Slate Blue */
+  --color-upcoming: #8B5CF6; /* Violet */
+  --color-candidates: #14B8A6; /* Teal */
+  --color-royal: #4F46E5; /* Royal Blue */
+  --color-orange: #F97316; /* Orange */
+  
+  --color-text-primary: #F8FAFC;
   --color-text-secondary: #A5B4C7;
   --color-text-muted: #7C8799;
+}
+
+[data-theme="light"] {
+  --color-bg: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-light: rgba(0, 0, 0, 0.15);
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #64748B;
 }
 
 body {
@@ -215,3 +234,50 @@ input[type='range']::-moz-range-track {
   background-color: rgba(79, 70, 229, 0.2);
   color: #a5b4fc;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Premium Micro Interactions
+───────────────────────────────────────────────────────────────────────────── */
+.hover-elevate {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-elevate:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.button-premium {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.button-premium:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(91, 108, 255, 0.25);
+}
+
+.glass-panel {
+  background: rgba(24, 37, 59, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+}
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.soft-glow {
+  transition: box-shadow 0.25s ease-out;
+}
+.soft-glow:hover {
+  box-shadow: 0 0 30px rgba(91, 108, 255, 0.15);
+}
+
+/* Premium Card Accents */
+.card-accent-analytics { border-top: 2px solid var(--color-analytics) !important; }
+.card-accent-upcoming { border-top: 2px solid var(--color-upcoming) !important; }
+.card-accent-history { border-top: 2px solid var(--color-history) !important; }
+.card-accent-candidates { border-top: 2px solid var(--color-candidates) !important; }
+.card-accent-success { border-top: 2px solid var(--color-success) !important; }
+.card-accent-warning { border-top: 2px solid var(--color-warning) !important; }
+.card-accent-royal { border-top: 2px solid var(--color-royal) !important; }
+.card-accent-orange { border-top: 2px solid var(--color-orange) !important; }
+.card-accent-danger { border-top: 2px solid var(--color-danger) !important; }

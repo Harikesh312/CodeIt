@@ -13,7 +13,7 @@ export default function HRLayout() {
       <Sidebar />
       <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         <Navbar />
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col">
           <Outlet />
         </div>
       </main>

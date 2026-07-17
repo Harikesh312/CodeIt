@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy, RefreshCw,
-  User, Shield, Bell, Palette, Settings, ChevronDown
+  User, Shield, Bell, Palette, Settings, ChevronDown, Home
 } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES } from '../utils/constants';
@@ -45,7 +45,7 @@ export default function Navbar({ showTimer = false }) {
 
   return (
     <header
-      className="h-14 backdrop-blur-md flex items-center px-5 gap-4 z-40 sticky top-0"
+      className="h-[80px] backdrop-blur-md flex items-center px-6 md:px-10 gap-8 z-40 sticky top-0"
       style={{ backgroundColor: 'rgba(10, 15, 28, 0.85)', borderBottom: '1px solid var(--color-border)' }}
     >
       {/* Sidebar toggle (HR only) */}
@@ -65,11 +65,11 @@ export default function Navbar({ showTimer = false }) {
       {/* Logo */}
       <Link
         to={role === ROLES.HR ? '/dashboard' : '/'}
-        className="flex items-center gap-2 font-bold text-lg tracking-tight transition-opacity hover:opacity-80"
+        className="flex items-center gap-2.5 font-extrabold text-2xl tracking-tight transition-opacity hover:opacity-80"
         style={{ color: 'var(--color-text-primary)' }}
       >
-        <span className="p-1 rounded-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
-          <Code2 size={18} />
+        <span className="p-1.5 rounded-xl" style={{ backgroundColor: 'var(--color-primary)' }}>
+          <Code2 size={24} />
         </span>
         <span>
           Code<span style={{ color: 'var(--color-primary-light)' }}>It</span>
@@ -169,7 +169,7 @@ export default function Navbar({ showTimer = false }) {
         <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2.5 px-2 py-1.5 rounded-xl transition-all duration-200 cursor-pointer"
+            className="flex items-center gap-3 px-2 py-1.5 rounded-2xl transition-all duration-200 cursor-pointer"
             style={{
               backgroundColor: dropdownOpen ? 'var(--color-card)' : 'transparent',
               border: dropdownOpen ? '1px solid var(--color-border)' : '1px solid transparent',
@@ -182,19 +182,18 @@ export default function Navbar({ showTimer = false }) {
             }}
           >
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
+              className="w-11 h-11 rounded-full flex items-center justify-center text-white text-base font-bold shadow-sm"
               style={{ backgroundColor: 'var(--color-primary)' }}
             >
               {user.name?.[0]?.toUpperCase() ?? 'U'}
             </div>
-            <div className="hidden sm:flex flex-col items-start">
-              <span className="text-xs font-medium leading-none" style={{ color: '#F8FAFC' }}>{user.name}</span>
-              <Badge variant={role === ROLES.HR ? 'hr' : 'candidate'} className="mt-0.5">
+            <div className="hidden sm:flex flex-col items-center justify-center mr-2">
+              <Badge variant={role === ROLES.HR ? 'hr' : 'candidate'} className="px-2 py-1 text-[10px]">
                 {role === ROLES.HR ? 'Interviewer' : 'Candidate'}
               </Badge>
             </div>
             <ChevronDown
-              size={14}
+              size={16}
               className={`hidden sm:block transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
               style={{ color: '#64748B' }}
             />
@@ -282,18 +281,30 @@ export default function Navbar({ showTimer = false }) {
         </div>
       )}
 
-      {/* Dashboard quick link (HR, not in dropdown context when in room) */}
-      {user && role === ROLES.HR && (
-        <Link
-          to="/dashboard"
-          className="p-1.5 rounded-lg transition-all duration-200"
-          style={{ color: '#94A3B8' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#F8FAFC'; e.currentTarget.style.backgroundColor = '#182235'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.backgroundColor = 'transparent'; }}
-          title="Dashboard"
-        >
-          <LayoutDashboard size={16} />
-        </Link>
+      {/* Right Side Icons: Home & Logout */}
+      {user && (
+        <div className="flex items-center gap-2">
+          <Link
+            to="/"
+            className="p-2 rounded-xl transition-all duration-200 flex items-center justify-center"
+            style={{ color: '#94A3B8', border: '1px solid transparent' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#F8FAFC'; e.currentTarget.style.backgroundColor = '#182235'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+            title="Landing Page"
+          >
+            <Home size={18} />
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-xl transition-all duration-200 flex items-center justify-center"
+            style={{ color: '#94A3B8', border: '1px solid transparent' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#F87171'; e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'transparent'; }}
+            title="Logout"
+          >
+            <LogOut size={18} />
+          </button>
+        </div>
       )}
     </header>
   );
