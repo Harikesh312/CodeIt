@@ -59,7 +59,7 @@ export function getInitials(name = '') {
  */
 export function getAvatarColor(name = '') {
   const colors = [
-    '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
+    '#6366f1', '#7c3aed', '#ec4899', '#f59e0b',
     '#10b981', '#3b82f6', '#ef4444', '#14b8a6',
   ];
   let hash = 0;

@@ -223,42 +223,40 @@ export function InterviewProvider({ children }) {
       restoredCodeRef.current = true;
     }
 
-    if (savedUser && savedUser.token) {
-      // Validate token is not obviously expired by checking its payload
-      try {
-        const parts = savedUser.token.split('.');
-        if (parts.length !== 3) throw new Error('Malformed token structure');
-        const payload = JSON.parse(atob(parts[1]));
-        if (!payload.exp) throw new Error('Token missing expiration');
-        const isExpired = payload.exp * 1000 < Date.now();
-        if (isExpired) {
-          // Token expired — clear storage
+    const verifySession = async () => {
+      if (savedUser && savedUser.token) {
+        try {
+          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          const res = await fetch(`${API_URL}/auth/me`, {
+            headers: { Authorization: `Bearer ${savedUser.token}` },
+          });
+
+          if (!res.ok) {
+            throw new Error('Session invalid or expired');
+          }
+
+          const data = await res.json();
+          const verifiedUser = { ...data.user, token: savedUser.token };
+
+          dispatch({ type: 'SET_USER', payload: verifiedUser });
+          localStorage.setItem('token', verifiedUser.token);
+          saveToStorage(STORAGE_KEYS.USER, verifiedUser);
+
+          if (savedRoom && savedRoom.roomId) {
+            dispatch({ type: 'SET_ROOM', payload: savedRoom });
+            socketService.connect();
+            socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId: savedRoom.roomId, user: verifiedUser });
+          }
+        } catch (err) {
           removeFromStorage(STORAGE_KEYS.USER);
           removeFromStorage(STORAGE_KEYS.ROOM);
           localStorage.removeItem('token');
-          setIsRestoringSession(false);
-          return;
         }
-      } catch {
-        // Malformed or invalid token — clear and start fresh
-        removeFromStorage(STORAGE_KEYS.USER);
-        removeFromStorage(STORAGE_KEYS.ROOM);
-        localStorage.removeItem('token');
-        setIsRestoringSession(false);
-        return;
       }
+      setIsRestoringSession(false);
+    };
 
-      dispatch({ type: 'SET_USER', payload: savedUser });
-      localStorage.setItem('token', savedUser.token);
-
-      if (savedRoom && savedRoom.roomId) {
-        dispatch({ type: 'SET_ROOM', payload: savedRoom });
-        socketService.connect();
-        socketService.emit(SOCKET_EVENTS.JOIN_ROOM, { roomId: savedRoom.roomId, user: savedUser });
-      }
-    }
-
-    setIsRestoringSession(false);
+    verifySession();
   }, []);
 
   // ── Timer management ────────────────────────────────────────────────────────

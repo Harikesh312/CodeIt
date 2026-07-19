@@ -5,30 +5,31 @@
    CSS Custom Properties — Enterprise Color Palette
 ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --color-primary: #5B6CFF;
-  --color-primary-light: #7C3AED; /* Using this for gradient/hover */
-  --color-primary-dark: #4338CA;
-  --color-accent: #22D3EE;
-  --color-accent-secondary: #8B5CF6;
-  --color-bg: #0A0F1C;
-  --color-surface: #131E31;
-  --color-card: #18253B;
-  --color-border: rgba(255, 255, 255, 0.07);
-  --color-border-light: rgba(255, 255, 255, 0.1);
-  --color-success: #10B981; /* Emerald */
-  --color-warning: #F59E0B; /* Amber */
-  --color-danger: #F43F5E; /* Rose */
-  --color-info: #0EA5E9; /* Sky Blue */
-  --color-analytics: #06B6D4; /* Cyan */
-  --color-history: #64748B; /* Slate Blue */
-  --color-upcoming: #8B5CF6; /* Violet */
-  --color-candidates: #14B8A6; /* Teal */
-  --color-royal: #4F46E5; /* Royal Blue */
-  --color-orange: #F97316; /* Orange */
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+  --color-accent: #06B6D4;
+  --color-accent-secondary: #7C3AED;
+  --color-bg: #050816;
+  --color-bg-secondary: #0B1220;
+  --color-surface: #111827;
+  --color-card: #111827;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-light: rgba(255, 255, 255, 0.12);
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #0EA5E9;
+  --color-analytics: #06B6D4;
+  --color-history: #64748B;
+  --color-upcoming: #7C3AED;
+  --color-candidates: #14B8A6;
+  --color-royal: #4F46E5;
+  --color-orange: #F97316;
   
   --color-text-primary: #F8FAFC;
-  --color-text-secondary: #A5B4C7;
-  --color-text-muted: #7C8799;
+  --color-text-secondary: #E2E8F0;
+  --color-text-muted: #94A3B8;
 }
 
 [data-theme="light"] {
@@ -43,7 +44,7 @@
 }
 
 body {
-  font-family: 'Geist', sans-serif;
+  font-family: 'Inter', 'Geist', sans-serif;
   font-weight: 450;
   font-size: 15px;
   line-height: 1.6;
@@ -52,6 +53,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-bg);
   color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .bg-grid-pattern {
@@ -61,9 +63,9 @@ body {
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
-h1 { font-weight: 700; font-size: 38px; line-height: 1.1; letter-spacing: -0.02em; }
-h2 { font-weight: 650; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
-h3 { font-weight: 600; font-size: 18px; line-height: 1.3; }
+h1 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 700; font-size: 38px; line-height: 1.1; letter-spacing: -0.02em; }
+h2 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 650; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
+h3 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.3; }
 p { font-weight: 450; font-size: 15px; line-height: 1.6; }
 label, .text-xs, .small-label { font-weight: 500; font-size: 13px; letter-spacing: 0.015em; }
 button { font-weight: 600; }
@@ -209,6 +211,14 @@ input[type='range']::-moz-range-track {
   animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-slide-up-fade {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
@@ -255,20 +265,21 @@ input[type='range']::-moz-range-track {
 }
 
 .glass-panel {
-  background: rgba(24, 37, 59, 0.65);
+  background: var(--color-card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border);
+  border-radius: 24px;
 }
 [data-theme="light"] .glass-panel {
   background: rgba(255, 255, 255, 0.75);
 }
 
 .soft-glow {
-  transition: box-shadow 0.25s ease-out;
+  transition: box-shadow 0.25s ease-out, transform 0.25s ease-out;
 }
 .soft-glow:hover {
-  box-shadow: 0 0 30px rgba(91, 108, 255, 0.15);
+  box-shadow: 0 0 30px rgba(124, 92, 255, 0.15);
 }
 
 /* Premium Card Accents */

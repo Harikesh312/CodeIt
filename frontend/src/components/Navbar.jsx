@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import {
-  Code2, LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy, RefreshCw,
+import { LayoutDashboard, LogOut, Menu, X, Wifi, WifiOff, Copy, RefreshCw,
   User, Shield, Bell, Palette, Settings, ChevronDown, Home
 } from 'lucide-react';
+import Logo from './Logo';
+import LogoutModal from './LogoutModal';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES } from '../utils/constants';
 import Badge from './ui/Badge';
@@ -16,6 +17,7 @@ export default function Navbar({ showTimer = false }) {
   const location = useLocation();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef(null);
 
   const isInRoom = location.pathname.startsWith('/room');
@@ -35,6 +37,11 @@ export default function Navbar({ showTimer = false }) {
 
   const handleLogout = () => {
     setDropdownOpen(false);
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutModal(false);
     reset();
     navigate('/');
   };
@@ -44,9 +51,10 @@ export default function Navbar({ showTimer = false }) {
   ];
 
   return (
+    <>
     <header
       className="h-[80px] backdrop-blur-md flex items-center px-6 md:px-10 gap-8 z-40 sticky top-0"
-      style={{ backgroundColor: 'rgba(10, 15, 28, 0.85)', borderBottom: '1px solid var(--color-border)' }}
+      style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', transition: 'background-color 0.3s ease' }}
     >
       {/* Sidebar toggle (HR only) */}
       {role === ROLES.HR && !isInRoom && (
@@ -69,7 +77,7 @@ export default function Navbar({ showTimer = false }) {
         style={{ color: 'var(--color-text-primary)' }}
       >
         <span className="p-1.5 rounded-xl" style={{ backgroundColor: 'var(--color-primary)' }}>
-          <Code2 size={24} />
+          <Logo size={24} className="text-white" />
         </span>
         <span>
           Code<span style={{ color: 'var(--color-primary-light)' }}>It</span>
@@ -307,5 +315,12 @@ export default function Navbar({ showTimer = false }) {
         </div>
       )}
     </header>
+
+    <LogoutModal
+      isOpen={showLogoutModal}
+      onClose={() => setShowLogoutModal(false)}
+      onConfirm={confirmLogout}
+    />
+    </>
   );
 }

@@ -17,27 +17,21 @@ const statusVariantMap = {
 
 function SkeletonCard() {
   return (
-    <div className="relative h-full flex flex-col max-w-7xl mx-auto w-full animate-fade-in z-0">
-      
-      {/* Background Watermark */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.03] blur-[2px]">
-        <FileText size={800} className="text-indigo-400" />
-      </div>
-
+    <div className="relative h-full flex flex-col p-8 rounded-3xl animate-pulse" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
       <div className="flex items-center justify-between mb-8">
         <div className="flex-1">
-          <div className="h-6 rounded-md w-3/4 mb-3" style={{ backgroundColor: 'var(--color-border)' }} />
-          <div className="h-4 rounded-md w-1/2" style={{ backgroundColor: 'var(--color-border)' }} />
+          <div className="h-6 rounded-md w-3/4 mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+          <div className="h-4 rounded-md w-1/2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
         </div>
-        <div className="h-5 w-16 rounded-full ml-2" style={{ backgroundColor: 'var(--color-border)' }} />
+        <div className="h-5 w-16 rounded-full ml-2" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
       </div>
       <div className="flex items-center gap-5 mb-6">
-        <div className="h-4 w-16 rounded-md" style={{ backgroundColor: 'var(--color-border)' }} />
-        <div className="h-4 w-12 rounded-md" style={{ backgroundColor: 'var(--color-border)' }} />
+        <div className="h-4 w-16 rounded-md" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+        <div className="h-4 w-12 rounded-md" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
       </div>
       <div className="flex items-center justify-between">
-        <div className="h-8 w-24 rounded-lg" style={{ backgroundColor: 'var(--color-border)' }} />
-        <div className="h-10 w-28 rounded-xl" style={{ backgroundColor: 'var(--color-border)' }} />
+        <div className="h-8 w-24 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+        <div className="h-10 w-28 rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
       </div>
     </div>
   );
@@ -76,52 +70,55 @@ function CreateRoomModal({ onClose, onCreate }) {
   };
 
   return (
-    <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in" style={{ backgroundColor: 'rgba(10,15,28,0.75)' }}>
-      <div className="rounded-[24px] shadow-2xl w-full max-w-2xl animate-scale-in glass-panel relative overflow-hidden" style={{ border: '1px solid var(--color-border-light)', boxShadow: '0 30px 100px rgba(0,0,0,0.6), 0 0 40px rgba(91,108,255,0.1)' }}>
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in" style={{ backgroundColor: 'rgba(10,15,28,0.85)' }}>
+      <div className="rounded-[32px] shadow-2xl w-full max-w-2xl animate-slide-up-fade relative overflow-hidden" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: '0 30px 100px rgba(0,0,0,0.8), 0 0 40px rgba(91,108,255,0.15)' }}>
         {/* Modal Watermark */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.03] blur-[1px]">
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.02] blur-[2px]">
           <Video size={400} className="text-indigo-400 translate-x-1/4" />
         </div>
         
         <div className="relative z-10 flex items-center justify-between px-10 py-8" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'rgba(91,108,255,0.15)' }}>
-              <Video size={24} style={{ color: 'var(--color-primary-light)' }} />
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'rgba(91,108,255,0.1)' }}>
+              <Video size={28} style={{ color: 'var(--color-primary)' }} />
             </div>
-            <h2 className="font-bold text-2xl tracking-tight" style={{ color: 'var(--color-text-primary)' }}>New Interview Session</h2>
+            <div>
+              <h2 className="font-extrabold text-2xl tracking-tight text-white">New Session</h2>
+              <p className="text-sm font-medium mt-1" style={{ color: 'var(--color-text-muted)' }}>Configure details for your interview</p>
+            </div>
           </div>
-          <button onClick={onClose} className="p-2.5 rounded-xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-white hover:bg-slate-800">
-            <XCircle size={24} />
+          <button onClick={onClose} className="p-3 rounded-2xl transition-all duration-200 cursor-pointer text-slate-400 hover:text-white hover:bg-slate-800">
+            <XCircle size={28} />
           </button>
         </div>
-        <div className="p-10 space-y-8">
+        <div className="px-10 py-8 space-y-8 relative z-10">
           <div>
-            <label className="block text-[13px] font-bold mb-3 uppercase tracking-widest text-slate-400">Session Title *</label>
-            <input value={title} onChange={(e) => { setTitle(e.target.value); setError(''); }} placeholder="e.g. Senior Frontend Engineer" className="w-full rounded-2xl px-5 py-4 text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100 placeholder-slate-500" />
+            <label className="block text-[11px] font-bold mb-3 uppercase tracking-[0.15em] text-slate-400">Session Title *</label>
+            <input value={title} onChange={(e) => { setTitle(e.target.value); setError(''); }} placeholder="e.g. Senior Frontend Engineer" className="w-full rounded-2xl px-5 py-4 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100 placeholder-slate-500 shadow-inner" />
           </div>
           <div>
-            <label className="block text-[13px] font-bold mb-3 uppercase tracking-widest text-slate-400">Candidate Name</label>
-            <input value={candidate} onChange={(e) => setCandidate(e.target.value)} placeholder="e.g. Riya Sharma" className="w-full rounded-2xl px-5 py-4 text-base transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100 placeholder-slate-500" />
+            <label className="block text-[11px] font-bold mb-3 uppercase tracking-[0.15em] text-slate-400">Candidate Name</label>
+            <input value={candidate} onChange={(e) => setCandidate(e.target.value)} placeholder="e.g. Riya Sharma" className="w-full rounded-2xl px-5 py-4 text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 bg-slate-800/50 border border-slate-700 text-slate-100 placeholder-slate-500 shadow-inner" />
           </div>
           <div className="pt-2">
-            <label className="block text-[13px] font-bold mb-4 uppercase tracking-widest text-slate-400 flex items-center justify-between">
+            <label className="block text-[11px] font-bold mb-4 uppercase tracking-[0.15em] text-slate-400 flex items-center justify-between">
               Duration
-              <span className="text-sm px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">{duration} min</span>
+              <span className="text-sm px-3 py-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 font-bold tracking-normal">{duration} min</span>
             </label>
             <input type="range" min={15} max={120} step={15} value={duration} onChange={(e) => setDuration(Number(e.target.value))} className="w-full" />
-            <div className="flex justify-between text-sm mt-3 font-medium text-slate-500">
+            <div className="flex justify-between text-xs mt-3 font-semibold text-slate-500">
               <span>15 min</span><span>120 min</span>
             </div>
           </div>
           {error && (
-            <div className="flex items-center gap-3 text-sm rounded-2xl px-5 py-4 bg-red-500/10 border border-red-500/20 text-red-400 font-medium">
+            <div className="flex items-center gap-3 text-sm rounded-2xl px-5 py-4 bg-red-500/10 border border-red-500/20 text-red-400 font-semibold shadow-sm">
               <AlertCircle size={18} />{error}
             </div>
           )}
         </div>
-        <div className="flex gap-4 px-10 pb-10">
+        <div className="flex gap-4 px-10 pb-10 relative z-10">
           <Button variant="ghost" className="flex-1 py-4 text-base" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" icon={Plus} className="flex-[2] py-4 text-base hover-elevate shadow-xl shadow-indigo-500/20" loading={loading} onClick={handleCreate}>
+          <Button variant="primary" icon={Plus} className="flex-[2] py-4 text-base shadow-xl shadow-indigo-500/20 hover-elevate" loading={loading} onClick={handleCreate}>
             {loading ? 'Creating…' : 'Create Session'}
           </Button>
         </div>
@@ -156,38 +153,39 @@ function RoomCard({ room, onEnter, onAddProblem }) {
 
   return (
     <div
-      className={`group rounded-[20px] p-8 transition-all duration-300 glass-panel hover-elevate soft-glow ${isEnded ? 'opacity-50' : 'cursor-pointer'} ${isActive ? 'card-accent-success' : isWaiting ? 'card-accent-warning' : 'card-accent-history'}`}
+      className={`group rounded-3xl p-8 transition-all duration-300 animate-slide-up-fade ${isEnded ? 'opacity-60 bg-slate-800/20 border border-slate-800' : 'cursor-pointer shadow-lg hover-elevate hover:shadow-xl'} ${isActive ? 'card-accent-success bg-surface border border-border' : isWaiting ? 'card-accent-warning bg-surface border border-border' : ''}`}
+      style={{ animationFillMode: 'both' }}
       onClick={isEnded ? undefined : handleEnter}
     >
       <div className="flex items-start justify-between mb-5">
         <div className="flex-1 min-w-0 pr-4">
-          <h3 className="font-extrabold text-lg truncate text-slate-100 tracking-tight">{room.title}</h3>
+          <h3 className="font-extrabold text-xl truncate text-white tracking-tight">{room.title}</h3>
           {room.candidate && (
-            <p className="text-[15px] mt-1.5 flex items-center gap-2 font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-              <Users size={16} />{room.candidate}
+            <p className="text-[14px] mt-2 flex items-center gap-2 font-medium" style={{ color: 'var(--color-text-muted)' }}>
+              <Users size={16} className="text-indigo-400" />{room.candidate}
             </p>
           )}
         </div>
-        <Badge variant={statusVariantMap[room.status]} dot className="flex-shrink-0 ml-3">{room.status}</Badge>
+        <Badge variant={statusVariantMap[room.status]} dot className="flex-shrink-0 ml-3 shadow-sm">{room.status}</Badge>
       </div>
 
-      <div className="flex items-center gap-5 text-xs mb-5 text-slate-500">
-        <span className="flex items-center gap-1.5"><TimerIcon size={12} />{room.duration} min</span>
-        <span className="flex items-center gap-1.5"><Clock size={12} />{timeAgo(room.createdAt)}</span>
+      <div className="flex items-center gap-5 text-[13px] font-semibold mb-6 text-slate-400">
+        <span className="flex items-center gap-1.5"><TimerIcon size={14} className="text-slate-500" />{room.duration} min</span>
+        <span className="flex items-center gap-1.5"><Clock size={14} className="text-slate-500" />{timeAgo(room.createdAt)}</span>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-3">
-          <code className="text-sm font-mono px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400">
+          <code className="text-sm font-mono px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-indigo-300 font-bold tracking-wide">
             {room.code}
           </code>
-          <button onClick={handleCopy} className="p-2 rounded-xl transition-all duration-200 cursor-pointer text-slate-500 border border-slate-700 hover:text-indigo-400 hover:border-indigo-500 bg-slate-800/30">
+          <button onClick={handleCopy} className="p-2 rounded-lg transition-all duration-200 cursor-pointer text-slate-400 hover:text-white hover:bg-slate-700 border border-transparent hover:border-slate-600">
             {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
           </button>
         </div>
         <div className="flex items-center gap-2">
           {isEnded ? (
-            <span className="text-xs italic px-2 py-1 text-slate-500">
+            <span className="text-xs font-bold uppercase tracking-widest px-2 py-1 text-slate-500">
               {room.status === ROOM_STATUSES.COMPLETED ? 'Concluded' : 'Cancelled'}
             </span>
           ) : (isActive || isWaiting) && (
@@ -264,8 +262,10 @@ export default function SessionsPage() {
         />
       )}
 
-      <div className="relative flex flex-col mb-10 overflow-hidden rounded-[24px] p-10 glass-panel">
-        <FileText className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 opacity-[0.02] text-indigo-400 pointer-events-none" />
+      <div className="relative flex flex-col mb-10 overflow-hidden rounded-3xl p-10 shadow-lg" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 opacity-[0.02] text-indigo-400 pointer-events-none">
+          <Calendar size={192} />
+        </div>
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>Interview Sessions</h1>
         <p className="text-lg mt-3 font-medium opacity-90 max-w-xl" style={{ color: 'var(--color-text-secondary)' }}>
           Manage and join your technical interview sessions.
@@ -289,9 +289,11 @@ export default function SessionsPage() {
             <Button variant="primary" size="lg" icon={Plus} className="px-8 py-4 mt-2 hover-elevate shadow-lg shadow-indigo-500/25" onClick={() => setShowCreateModal(true)}>New Interview Session</Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
-            {rooms.map((room) => (
-              <RoomCard key={room.id} room={room} onAddProblem={handleAddProblem} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {rooms.map((room, index) => (
+              <div key={room.id} style={{ animationDelay: `${index * 50}ms` }}>
+                <RoomCard room={room} onAddProblem={handleAddProblem} />
+              </div>
             ))}
           </div>
         )}

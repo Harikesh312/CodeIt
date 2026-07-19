@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Video, Clock, CheckCircle2, TrendingUp, PlayCircle, Plus, Activity, Calendar, Code2, Sparkles, MessageSquare, Star, Zap } from 'lucide-react';
+import { Users, Video, Clock, CheckCircle2, TrendingUp, PlayCircle, Plus, Activity, Calendar, Sparkles, Star, Zap } from 'lucide-react';
 import { useInterview } from '../context/InterviewContext';
 import { ROLES, ROOM_STATUSES } from '../utils/constants';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import { timeAgo } from '../utils/helpers';
+import Logo from '../components/Logo';
 
 function StatCard({ label, value, icon: Icon, colorClass, accentClass }) {
   return (
-    <div className={`p-6 rounded-[20px] flex flex-col justify-between transition-all duration-250 hover-elevate soft-glow min-h-[140px] ${accentClass}`} style={{ backgroundColor: 'rgba(24, 37, 59, 0.7)', border: '1px solid var(--color-border)' }}>
+    <div className={`p-6 rounded-3xl flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 min-h-[140px] ${accentClass}`} style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', transition: 'background-color 0.3s ease, border-color 0.3s ease, transform 0.25s ease, box-shadow 0.25s ease' }}>
       <div className="flex items-center gap-4 mb-2">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${colorClass}`}>
           <Icon size={24} />
@@ -75,12 +76,12 @@ export default function DashboardPage() {
     <div className="relative h-full flex flex-col space-y-10 animate-fade-in max-w-7xl mx-auto pb-10 w-full z-0">
       
       {/* Background Watermark */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.03] blur-[2px]">
-        <Code2 size={800} className="text-indigo-400" />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.025] blur-[3px]">
+        <Logo size={700} />
       </div>
 
       {/* Premium Hero Section */}
-      <div className="relative p-10 md:p-14 rounded-3xl overflow-hidden flex items-center justify-between glass-panel hover-elevate soft-glow min-h-[240px]">
+      <div className="relative p-10 md:p-14 rounded-3xl overflow-hidden flex items-center justify-between glass-panel hover:-translate-y-0.5 transition-all duration-300 min-h-[240px]">
         <div className="relative z-10 max-w-2xl">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
             Welcome back, {user?.name?.split(' ')[0] || 'Interviewer'}
@@ -98,9 +99,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Abstract watermark illustration */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.04] text-white hidden md:block">
-          <Code2 size={500} strokeWidth={1} style={{ transform: 'translateX(10%)' }} />
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.04] hidden md:block">
+          <Logo size={400} />
         </div>
       </div>
 
@@ -116,9 +116,9 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
         
         {/* GitHub-style Performance Analytics */}
-        <div className="lg:col-span-2 relative p-8 rounded-[20px] transition-all duration-250 glass-panel hover-elevate soft-glow overflow-hidden card-accent-analytics" style={{ minHeight: '260px' }}>
+        <div className="lg:col-span-2 relative p-8 rounded-3xl transition-all duration-300 glass-panel hover:-translate-y-0.5 overflow-hidden card-accent-analytics" style={{ minHeight: '260px' }}>
           {/* Watermark */}
-          <Activity className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.03] text-cyan-400 pointer-events-none" />
+          <Activity className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-analytics)' }} />
           
           <div className="relative z-10 flex items-center justify-between mb-6">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
@@ -159,8 +159,8 @@ export default function DashboardPage() {
         </div>
 
         {/* AI Recommendations */}
-        <div className="relative p-8 rounded-[20px] transition-all duration-250 glass-panel hover-elevate soft-glow overflow-hidden card-accent-royal">
-          <Sparkles className="absolute right-2 top-2 w-48 h-48 opacity-[0.02] text-indigo-400 pointer-events-none" />
+        <div className="relative p-8 rounded-3xl transition-all duration-300 glass-panel hover:-translate-y-0.5 overflow-hidden card-accent-royal">
+          <Sparkles className="absolute right-2 top-2 w-48 h-48 opacity-[0.02] pointer-events-none" style={{ color: 'var(--color-primary)' }} />
           <div className="relative z-10 flex items-center justify-between mb-6">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
               <Sparkles size={18} className="text-indigo-400" /> AI Insights
@@ -183,8 +183,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Upcoming Sessions */}
-        <div className="relative p-8 rounded-[20px] transition-all duration-250 glass-panel hover-elevate soft-glow flex-1 overflow-hidden card-accent-upcoming">
-          <Calendar className="absolute -right-6 -top-6 w-48 h-48 opacity-[0.03] text-violet-400 pointer-events-none" />
+        <div className="relative p-8 rounded-3xl transition-all duration-300 glass-panel hover:-translate-y-0.5 flex-1 overflow-hidden card-accent-upcoming">
+          <Calendar className="absolute -right-6 -top-6 w-48 h-48 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-upcoming)' }} />
           
           <div className="relative z-10 flex items-center justify-between mb-6">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
@@ -222,8 +222,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Session History */}
-        <div className="relative p-8 rounded-[20px] flex flex-col h-full transition-all duration-250 glass-panel hover-elevate soft-glow overflow-hidden card-accent-history">
-          <TrendingUp className="absolute right-2 bottom-12 w-56 h-56 opacity-[0.03] text-slate-400 pointer-events-none" />
+        <div className="relative p-8 rounded-3xl flex flex-col h-full transition-all duration-300 glass-panel hover:-translate-y-0.5 overflow-hidden card-accent-history">
+          <TrendingUp className="absolute right-2 bottom-12 w-56 h-56 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-history)' }} />
           
           <div className="relative z-10 flex items-center justify-between mb-8">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>

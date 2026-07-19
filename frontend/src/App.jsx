@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { InterviewProvider, useInterview } from './context/InterviewContext';
 import { ToastProvider } from './components/ToastProvider';
+import { ThemeProvider } from './context/ThemeContext';
 import LoginPage from './pages/LoginPage';
+import LandingPage from './pages/LandingPage';
 import DashboardPage from './pages/DashboardPage';
 import JoinRoomPage from './pages/JoinRoomPage';
 import InterviewRoomPage from './pages/InterviewRoomPage';
@@ -20,7 +22,7 @@ function ProtectedRoute({ children, requiredRole }) {
   // Show loading spinner while session is being restored from localStorage
   if (isRestoringSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0B1220' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#050816' }}>
         <LoadingSpinner size="lg" text="Restoring session…" />
       </div>
     );
@@ -37,7 +39,8 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
 
       {/* Candidate only */}
       <Route
@@ -82,11 +85,13 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <InterviewProvider>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
-      </InterviewProvider>
+      <ThemeProvider>
+        <InterviewProvider>
+          <ToastProvider>
+            <AppRoutes />
+          </ToastProvider>
+        </InterviewProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
