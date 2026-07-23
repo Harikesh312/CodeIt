@@ -75,11 +75,6 @@ export default function DashboardPage() {
   return (
     <div className="relative h-full flex flex-col space-y-10 animate-fade-in max-w-7xl mx-auto pb-10 w-full z-0">
       
-      {/* Background Watermark */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.025] blur-[3px]">
-        <Logo size={700} />
-      </div>
-
       {/* Premium Hero Section */}
       <div className="relative p-10 md:p-14 rounded-3xl overflow-hidden flex items-center justify-between glass-panel hover:-translate-y-0.5 transition-all duration-300 min-h-[240px]">
         <div className="relative z-10 max-w-2xl">
@@ -97,10 +92,6 @@ export default function DashboardPage() {
               View Sessions
             </Button>
           </div>
-        </div>
-
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.04] hidden md:block">
-          <Logo size={400} />
         </div>
       </div>
 

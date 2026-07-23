@@ -41,15 +41,7 @@ export default function Sidebar() {
       >
         {/* Logo */}
         <div className="px-7 mb-8 flex items-center gap-3.5">
-          <div 
-            className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-white shadow-lg"
-            style={{ 
-              background: 'linear-gradient(135deg, #4F8BFF, #7C5CFF)',
-              boxShadow: '0 4px 20px rgba(124, 92, 255, 0.3)'
-            }}
-          >
-            <Logo size={26} />
-          </div>
+            <Logo />
           <span className="text-[22px] font-extrabold tracking-tight" style={{ color: 'var(--color-text-primary)' }}>
             Code<span style={{ color: 'var(--color-primary-light)' }}>It</span>
           </span>

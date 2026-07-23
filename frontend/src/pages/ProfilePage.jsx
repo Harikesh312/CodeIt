@@ -148,35 +148,32 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="relative max-w-7xl mx-auto h-full flex flex-col space-y-6 animate-fade-in pb-12 w-full z-0 px-4 md:px-0" style={{ paddingTop: '12px' }}>
+    <div className="relative max-w-7xl mx-auto h-full flex flex-col space-y-6 animate-fade-in pb-12 w-full z-0 px-4 md:px-0">
       
-      {/* Background Watermark */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.02] blur-[3px]">
-        <Logo size={600} />
-      </div>
-
       {/* ══════════════════════════════════════════════════════════════════
           PROFILE HEADER BANNER
       ═══════════════════════════════════════════════════════════════════ */}
       <div 
-        className="relative rounded-3xl p-8 md:p-10 overflow-hidden"
-        style={{ 
-          ...cardStyle,
-          background: theme === 'dark' 
-            ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.95) 0%, rgba(30, 27, 75, 0.4) 100%)'
-            : 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(124, 92, 255, 0.08) 100%)',
-          backdropFilter: 'blur(20px)',
-        }}
+        className="relative rounded-3xl overflow-hidden flex flex-col"
+        style={cardStyle}
       >
-        {/* Decorative gradient blob */}
-        <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(124, 92, 255, 0.15), transparent 70%)' }} />
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(79, 139, 255, 0.1), transparent 70%)' }} />
+        {/* Banner block at the top */}
+        <div className="h-28 w-full relative overflow-hidden" style={{ 
+          background: theme === 'dark' 
+            ? 'linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(17, 24, 39, 0.95) 100%)'
+            : 'linear-gradient(135deg, rgba(124, 92, 255, 0.15) 0%, rgba(255,255,255,0.95) 100%)',
+        }}>
+          {/* Decorative gradient blob */}
+          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(124, 92, 255, 0.3), transparent 70%)' }} />
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(79, 139, 255, 0.2), transparent 70%)' }} />
+        </div>
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* Content area below the banner */}
+        <div className="relative z-10 p-8 md:p-10 pt-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
           {/* Left: Avatar + Info */}
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-50">
             <div 
-              className="w-[88px] h-[88px] rounded-[1.5rem] flex items-center justify-center text-[36px] font-extrabold text-white shadow-xl"
+              className="w-[88px] h-[88px] flex-shrink-0 rounded-[1.5rem] flex items-center justify-center text-[36px] font-extrabold text-white shadow-xl"
               style={{ 
                 background: 'linear-gradient(135deg, #4F8BFF, #7C5CFF)',
                 boxShadow: '0 8px 32px rgba(124, 92, 255, 0.35)' 
@@ -184,7 +181,7 @@ export default function ProfilePage() {
             >
               {user?.name?.[0]?.toUpperCase() || 'U'}
             </div>
-            <div className="text-center sm:text-left">
+            <div className="text-center sm:text-left mt-1">
               <h1 className="text-[28px] font-extrabold tracking-tight mb-1" style={{ color: 'var(--color-text-primary)' }}>
                 {user?.name || 'Interviewer'}
               </h1>

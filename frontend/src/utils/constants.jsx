@@ -3,8 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React from 'react';
-import { SiJavascript, SiPython, SiCplusplus, SiC } from 'react-icons/si';
-import { FaJava } from 'react-icons/fa';
+import { FileCode2, Terminal, Coffee, Code, Hash } from 'lucide-react';
 
 export const ROLES = {
   HR: 'hr',
@@ -19,11 +18,11 @@ export const ROOM_STATUSES = {
 };
 
 export const LANGUAGES = [
-  { id: 'javascript', label: 'JavaScript', monacoId: 'javascript', icon: <SiJavascript className="text-yellow-400" /> },
-  { id: 'python',     label: 'Python',     monacoId: 'python',     icon: <SiPython className="text-blue-400" /> },
-  { id: 'java',       label: 'Java',       monacoId: 'java',       icon: <FaJava className="text-orange-500" /> },
-  { id: 'cpp',        label: 'C++',        monacoId: 'cpp',        icon: <SiCplusplus className="text-blue-500" /> },
-  { id: 'c',          label: 'C',          monacoId: 'c',          icon: <SiC className="text-blue-600" /> },
+  { id: 'javascript', label: 'JavaScript', monacoId: 'javascript', icon: <FileCode2 className="text-yellow-400" size={18} /> },
+  { id: 'python',     label: 'Python',     monacoId: 'python',     icon: <Terminal className="text-blue-400" size={18} /> },
+  { id: 'java',       label: 'Java',       monacoId: 'java',       icon: <Coffee className="text-orange-500" size={18} /> },
+  { id: 'cpp',        label: 'C++',        monacoId: 'cpp',        icon: <Code className="text-blue-500" size={18} /> },
+  { id: 'c',          label: 'C',          monacoId: 'c',          icon: <Hash className="text-blue-600" size={18} /> },
 ];
 
 export const DEFAULT_LANGUAGE = LANGUAGES[0]; // JavaScript

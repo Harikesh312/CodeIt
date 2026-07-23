@@ -76,9 +76,7 @@ export default function Navbar({ showTimer = false }) {
         className="flex items-center gap-2.5 font-extrabold text-2xl tracking-tight transition-opacity hover:opacity-80"
         style={{ color: 'var(--color-text-primary)' }}
       >
-        <span className="p-1.5 rounded-xl" style={{ backgroundColor: 'var(--color-primary)' }}>
-          <Logo size={24} className="text-white" />
-        </span>
+        <Logo />
         <span>
           Code<span style={{ color: 'var(--color-primary-light)' }}>It</span>
         </span>

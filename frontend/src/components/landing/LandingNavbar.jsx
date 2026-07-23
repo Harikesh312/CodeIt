@@ -44,15 +44,7 @@ export default function LandingNavbar() {
       <div className="container mx-auto px-8 max-w-[1500px] flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3 group relative z-10">
-          <div className="relative flex items-center justify-center w-[52px] h-[52px]">
-            {/* Soft purple glow */}
-            <div className="absolute inset-0 bg-[#7C3AED] blur-xl opacity-30 group-hover:opacity-50 transition-opacity rounded-full"></div>
-            {/* Proper padding inside the icon background */}
-            <div className="relative w-full h-full bg-[#111827] border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1]/20 to-transparent"></div>
-              <Logo size={28} className="text-white z-10" />
-            </div>
-          </div>
+          <Logo />
           <span className="text-2xl font-bold tracking-tight text-white drop-shadow-sm">
             Code<span className="text-[#6366F1]">It</span>
           </span>

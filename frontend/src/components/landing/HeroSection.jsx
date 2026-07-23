@@ -42,7 +42,7 @@ export default function HeroSection() {
               <span className="text-sm font-semibold text-[#94A3B8] tracking-wide">CodeIt Enterprise v2.0 is live</span>
             </motion.div>
 
-            <motion.h1 variants={itemVariants} className="text-5xl lg:text-7xl xl:text-[80px] font-extrabold tracking-tight text-white leading-[1.1]">
+            <motion.h1 variants={itemVariants} className="text-5xl lg:text-7xl xl:text-[80px] font-extrabold tracking-tight text-white leading-[1.05] mb-6">
               AI Powered <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366F1] via-[#7C3AED] to-[#06B6D4]">
                 Technical Interview
@@ -50,13 +50,13 @@ export default function HeroSection() {
               Platform
             </motion.h1>
 
-            <motion.p variants={itemVariants} className="text-lg md:text-xl text-[#94A3B8] leading-relaxed font-medium">
+            <motion.p variants={itemVariants} className="text-lg md:text-xl text-[#8B949E] leading-relaxed font-light mb-2">
               Evaluate resumes, conduct AI interviews, coding assessments and hire top talent with enterprise analytics. The complete suite for modern hiring teams.
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-5 mt-4">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-5 mt-6">
               <Link to="/login" className="px-8 py-4 rounded-2xl font-bold text-white bg-[#6366F1] hover:bg-[#4F46E5] shadow-[0_0_30px_rgba(99,102,241,0.3)] hover:shadow-[0_0_40px_rgba(99,102,241,0.5)] transition-all hover:-translate-y-1 duration-300 flex items-center justify-center gap-3 group text-lg border border-[#818CF8]/30">
-                Start Free <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+                Get Started <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
               </Link>
               <button className="px-8 py-4 rounded-2xl font-bold text-white bg-white/5 border border-white/10 hover:bg-white/10 backdrop-blur-md transition-all hover:-translate-y-1 duration-300 flex items-center justify-center gap-3 text-lg">
                 <LayoutDashboard size={20} className="text-[#06B6D4]" /> Open Dashboard

@@ -47,7 +47,11 @@ export default function LoginPage() {
       }
       // Navigation handled by effect or context
     } catch (err) {
-      setError(err.message || 'Authentication failed. Please try again.');
+      if (err.message === 'Failed to fetch' || err.message.includes('NetworkError')) {
+        setError('Unable to connect to the server. Please check your internet connection or try again later.');
+      } else {
+        setError(err.message || 'Authentication failed. Please check your credentials and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -93,8 +97,8 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="p-4 rounded-2xl shadow-2xl mb-5 flex items-center justify-center bg-[#6366F1] shadow-[0_0_40px_rgba(109,93,253,0.3)]">
-            <Logo size={36} className="text-white" />
+          <div className="mb-5">
+            <Logo />
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-white">
             Code<span className="text-[#7C3AED]">It</span>

@@ -226,7 +226,7 @@ export function InterviewProvider({ children }) {
     const verifySession = async () => {
       if (savedUser && savedUser.token) {
         try {
-          const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
           const res = await fetch(`${API_URL}/auth/me`, {
             headers: { Authorization: `Bearer ${savedUser.token}` },
           });
@@ -372,7 +372,7 @@ export function InterviewProvider({ children }) {
   // ── Actions ─────────────────────────────────────────────────────────────────
   const login = useCallback(async (email, password) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
       const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -403,7 +403,7 @@ export function InterviewProvider({ children }) {
 
   const registerUser = useCallback(async (name, email, password, role) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
       const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -559,7 +559,7 @@ export function InterviewProvider({ children }) {
 
   const fetchRoomStatus = useCallback(async (roomId) => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname}:5000/api`;
       const token = localStorage.getItem('token');
       const res = await fetch(`${API_URL}/rooms/${roomId}`, {
         headers: { Authorization: `Bearer ${token}` },
