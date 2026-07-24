@@ -83,11 +83,10 @@ export default function EditorPanel() {
                     <button
                       key={lang.id}
                       onClick={() => handleSelectLanguage(lang)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-gray-800 ${
-                        lang.id === language.id
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-gray-800 ${lang.id === language.id
                           ? 'text-blue-400 bg-blue-500/10'
                           : 'text-gray-300'
-                      }`}
+                        }`}
                     >
                       <span>{lang.icon}</span>
                       <span>{lang.label}</span>

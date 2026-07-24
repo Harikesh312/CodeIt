@@ -7,12 +7,12 @@ export default function Footer() {
     <footer className="relative bg-gradient-to-b from-[#141414] to-[#10131C] overflow-hidden">
       {/* Soft radial glow behind branding */}
       <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-[#6366F1] rounded-full blur-[150px] opacity-[0.04] pointer-events-none -translate-x-1/2 -translate-y-1/2"></div>
-      
+
       <div className="w-full max-w-[1800px] mx-auto px-8 lg:px-20 xl:px-[120px] pt-20 pb-10 flex flex-col relative z-10">
-        
+
         {/* ROW 1: Main Footer Content */}
         <div className="flex flex-col lg:flex-row justify-between items-start gap-16 lg:gap-12 mb-16">
-          
+
           {/* Left Section - Branding (Far Left) */}
           <div className="flex-1 lg:max-w-[400px] flex flex-col relative">
             <Link to="/" className="flex items-center gap-3 mb-8 group w-fit">
@@ -21,7 +21,7 @@ export default function Footer() {
                 Code<span className="text-white">It</span>
               </span>
             </Link>
-            
+
             <div className="mb-10">
               <p className="text-[#8B949E] text-[15px] leading-relaxed font-light">
                 Helping organizations discover exceptional technical talent through intelligent hiring experiences.
@@ -30,7 +30,7 @@ export default function Footer() {
                 We build AI-powered recruitment solutions that make hiring faster, smarter and more human.
               </p>
             </div>
-            
+
             <div>
               <h4 className="text-white/50 text-[10px] font-bold tracking-[0.25em] uppercase mb-6">Stay Connected</h4>
               <div className="flex gap-4">
@@ -41,11 +41,11 @@ export default function Footer() {
                   <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="group-hover:scale-110 transition-transform duration-500 ease-out"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                 </a>
                 <a href="#" className="w-11 h-11 rounded-full border border-white/10 flex items-center justify-center text-[#8B949E] hover:text-white hover:border-white/30 hover:bg-white/5 transition-all duration-500 ease-out group">
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className="group-hover:scale-110 transition-transform duration-500 ease-out"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" className="group-hover:scale-110 transition-transform duration-500 ease-out"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                 </a>
               </div>
             </div>
-            
+
             {/* Architectural Vertical Divider (Visible on lg, positioned to the right of the left column) */}
             <div className="hidden lg:block absolute right-[-20px] xl:right-[-60px] top-0 bottom-[-40px] w-[1px] bg-white/[0.04]"></div>
           </div>
@@ -89,14 +89,14 @@ export default function Footer() {
                 Receive thoughtful updates about AI hiring, product improvements and new platform features.
               </p>
               <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-                <input 
-                  type="email" 
-                  placeholder="Enter your email" 
+                <input
+                  type="email"
+                  placeholder="Enter your email"
                   className="w-full bg-white/[0.02] border border-white/[0.05] backdrop-blur-md rounded-full px-5 py-3 text-[15px] text-white placeholder-[#8B949E]/60 focus:outline-none focus:border-[#6366F1]/40 focus:bg-white/[0.04] transition-all duration-500"
                   required
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full bg-[#6366F1] text-white font-medium text-[15px] rounded-full px-5 py-3 hover:bg-[#4F46E5] hover:shadow-[0_0_24px_rgba(99,102,241,0.25)] transition-all duration-500 ease-out"
                 >
                   Subscribe
@@ -104,7 +104,7 @@ export default function Footer() {
               </form>
             </div>
           </div>
-          
+
         </div>
 
         {/* ROW 2: Bottom Bar (Full Width) */}
@@ -119,7 +119,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
+
       </div>
     </footer>
   );

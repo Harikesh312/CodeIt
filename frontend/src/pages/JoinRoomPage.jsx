@@ -57,14 +57,14 @@ export default function JoinRoomPage() {
       <main className="flex-1 flex flex-col overflow-hidden relative z-10">
         <Navbar />
         <div className="flex-1 overflow-y-auto p-6 md:p-10 flex flex-col relative z-0">
-          
+
           {/* Watermark */}
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.03] blur-[2px]">
             <Code2 size={800} className="text-cyan-400" />
           </div>
 
           <div className="max-w-7xl mx-auto w-full space-y-8 pb-10 animate-fade-in">
-            
+
             {/* Candidate Hero & Join Room Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 relative p-10 rounded-[24px] glass-panel hover-elevate soft-glow flex flex-col justify-center min-h-[300px] overflow-hidden">
@@ -87,7 +87,7 @@ export default function JoinRoomPage() {
               <div className="relative p-8 rounded-[24px] glass-panel hover-elevate soft-glow flex flex-col justify-center card-accent-royal">
                 <h3 className="text-xl font-bold text-white mb-2">Join Interview</h3>
                 <p className="text-xs text-slate-400 mb-6">Enter the 6-digit code shared by your interviewer</p>
-                
+
                 <div className="relative mb-6">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">
                     <Hash size={16} />
@@ -107,9 +107,9 @@ export default function JoinRoomPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 {error && <div className="text-xs text-rose-400 mb-4 bg-rose-500/10 px-3 py-2 rounded-lg flex items-center gap-2"><AlertCircle size={14} />{error}</div>}
-                
+
                 <Button variant="primary" className="w-full py-3.5 text-sm button-premium" loading={loading} iconRight={ArrowRight} onClick={handleJoin}>
                   {loading ? 'Connecting…' : 'Enter Session'}
                 </Button>
@@ -150,12 +150,12 @@ export default function JoinRoomPage() {
 
             {/* Timelines and Invites */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
+
               {/* Upcoming Interviews */}
               <div className="lg:col-span-2 p-8 rounded-[24px] glass-panel hover-elevate soft-glow card-accent-upcoming relative overflow-hidden">
                 <Calendar className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.03] text-violet-400 pointer-events-none" />
                 <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Calendar size={18} className="text-violet-400" /> Upcoming Interviews</h2>
-                
+
                 <div className="space-y-4">
                   <div className="p-4 rounded-xl border border-slate-700/50 bg-slate-800/30 flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -184,7 +184,7 @@ export default function JoinRoomPage() {
               <div className="p-8 rounded-[24px] glass-panel hover-elevate soft-glow card-accent-orange relative overflow-hidden">
                 <Activity className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.03] text-orange-400 pointer-events-none" />
                 <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Activity size={18} className="text-orange-400" /> Timeline</h2>
-                
+
                 <div className="relative before:absolute before:inset-0 before:ml-3 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-slate-700 space-y-6">
                   <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-slate-800 bg-emerald-500 text-slate-900 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
@@ -229,7 +229,7 @@ export default function JoinRoomPage() {
                 </ul>
               </div>
             </div>
-            
+
           </div>
         </div>
       </main>

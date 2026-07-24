@@ -24,7 +24,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (isLogin) {
       if (!email.trim() || !password.trim()) {
         setError('Email and password are required.');
@@ -36,7 +36,7 @@ export default function LoginPage() {
         return;
       }
     }
-    
+
     setLoading(true);
 
     try {
@@ -64,26 +64,26 @@ export default function LoginPage() {
       {/* Animated background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         {/* Grid */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage: 'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
             backgroundSize: '40px 40px'
           }}
         />
-        <motion.div 
+        <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.25, 0.4, 0.25] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[120px] bg-gradient-to-r from-[#6366F1]/30 to-[#7C3AED]/20"
         />
-        <motion.div 
+        <motion.div
           animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
           className="absolute -bottom-40 -right-40 w-[500px] h-[500px] rounded-full blur-[120px] bg-gradient-to-l from-[#06B6D4]/20 to-[#6366F1]/20"
         />
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -109,7 +109,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, delay: 0.15 }}
@@ -117,7 +117,7 @@ export default function LoginPage() {
         >
           {/* Subtle gradient border glow */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#6366F1]/10 to-transparent pointer-events-none" />
-          
+
           <div className="relative z-10">
             {user ? (
               <div className="flex flex-col items-center mb-8">
@@ -152,22 +152,20 @@ export default function LoginPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedRole(ROLES.HR)}
-                          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                            selectedRole === ROLES.HR 
-                              ? 'bg-[#6366F1]/15 text-[#6366F1] shadow-sm border border-[#6366F1]/20' 
-                              : 'text-[#94A3B8] hover:text-white'
-                          }`}
+                          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${selectedRole === ROLES.HR
+                            ? 'bg-[#6366F1]/15 text-[#6366F1] shadow-sm border border-[#6366F1]/20'
+                            : 'text-[#94A3B8] hover:text-white'
+                            }`}
                         >
                           <Briefcase size={16} /> Interviewer
                         </button>
                         <button
                           type="button"
                           onClick={() => setSelectedRole(ROLES.CANDIDATE)}
-                          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
-                            selectedRole === ROLES.CANDIDATE 
-                              ? 'bg-[#06B6D4]/15 text-[#06B6D4] shadow-sm border border-[#06B6D4]/20' 
-                              : 'text-[#94A3B8] hover:text-white'
-                          }`}
+                          className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${selectedRole === ROLES.CANDIDATE
+                            ? 'bg-[#06B6D4]/15 text-[#06B6D4] shadow-sm border border-[#06B6D4]/20'
+                            : 'text-[#94A3B8] hover:text-white'
+                            }`}
                         >
                           <UserCheck size={16} /> Candidate
                         </button>
@@ -219,7 +217,7 @@ export default function LoginPage() {
 
                   {/* Error */}
                   {error && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-red-500/10 border border-red-500/20 text-red-400"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, LogOut, Edit2, Mail, Briefcase, Calendar, Key, UserCircle, Shield, 
+import {
+  User, LogOut, Edit2, Mail, Briefcase, Calendar, Key, UserCircle, Shield,
   Clock, Bell, Monitor, CheckCircle, Activity, FileText, Smartphone,
   Award, Zap, TrendingUp, Star, Lock, Globe, Eye, ChevronRight,
   Code2, GitBranch, ExternalLink
@@ -63,7 +63,7 @@ export default function ProfilePage() {
   const { addToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  
+
   // Password Update State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -100,7 +100,7 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to update password');
-      
+
       addToast('success', 'Password updated successfully!');
       setShowPasswordModal(false);
       setCurrentPassword('');
@@ -149,17 +149,17 @@ export default function ProfilePage() {
 
   return (
     <div className="relative max-w-7xl mx-auto h-full flex flex-col space-y-6 animate-fade-in pb-12 w-full z-0 px-4 md:px-0">
-      
+
       {/* ══════════════════════════════════════════════════════════════════
           PROFILE HEADER BANNER
       ═══════════════════════════════════════════════════════════════════ */}
-      <div 
+      <div
         className="relative rounded-3xl overflow-hidden flex flex-col"
         style={cardStyle}
       >
         {/* Banner block at the top */}
-        <div className="h-28 w-full relative overflow-hidden" style={{ 
-          background: theme === 'dark' 
+        <div className="h-28 w-full relative overflow-hidden" style={{
+          background: theme === 'dark'
             ? 'linear-gradient(135deg, rgba(30, 27, 75, 0.6) 0%, rgba(17, 24, 39, 0.95) 100%)'
             : 'linear-gradient(135deg, rgba(124, 92, 255, 0.15) 0%, rgba(255,255,255,0.95) 100%)',
         }}>
@@ -172,11 +172,11 @@ export default function ProfilePage() {
         <div className="relative z-10 p-8 md:p-10 pt-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
           {/* Left: Avatar + Info */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 relative z-50">
-            <div 
+            <div
               className="w-[88px] h-[88px] flex-shrink-0 rounded-[1.5rem] flex items-center justify-center text-[36px] font-extrabold text-white shadow-xl"
-              style={{ 
+              style={{
                 background: 'linear-gradient(135deg, #4F8BFF, #7C5CFF)',
-                boxShadow: '0 8px 32px rgba(124, 92, 255, 0.35)' 
+                boxShadow: '0 8px 32px rgba(124, 92, 255, 0.35)'
               }}
             >
               {user?.name?.[0]?.toUpperCase() || 'U'}
@@ -203,21 +203,21 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-          
+
           {/* Right: Actions */}
           <div className="flex gap-3 sm:w-auto w-full">
-            <Button 
-              variant="ghost" 
-              icon={LogOut} 
-              onClick={() => setShowLogoutModal(true)} 
+            <Button
+              variant="ghost"
+              icon={LogOut}
+              onClick={() => setShowLogoutModal(true)}
               className="text-red-400 hover:text-red-300 hover:bg-red-400/10 flex-1 sm:flex-none"
             >
               Sign Out
             </Button>
-            <Button 
-              variant="primary" 
-              icon={Edit2} 
-              onClick={() => setIsEditing(!isEditing)} 
+            <Button
+              variant="primary"
+              icon={Edit2}
+              onClick={() => setIsEditing(!isEditing)}
               className="flex-1 sm:flex-none shadow-md"
             >
               {isEditing ? 'Save Changes' : 'Edit Profile'}
@@ -230,16 +230,16 @@ export default function ProfilePage() {
           MAIN GRID: 3 Columns
       ═══════════════════════════════════════════════════════════════════ */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* ─────── LEFT COLUMN (span 2) ─────── */}
         <div className="lg:col-span-2 flex flex-col gap-6">
-          
+
           {/* Personal Information */}
           <div className="rounded-3xl p-7 transition-all duration-300 hover:-translate-y-0.5" style={cardStyle}>
             <h3 className="mb-6 flex items-center gap-2.5 font-bold text-[16px]" style={{ color: 'var(--color-text-primary)' }}>
               <User size={18} style={{ color: 'var(--color-primary)' }} /> Personal Information
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { label: 'Full Name', value: user?.name || 'Not provided', editable: true, type: 'text' },
@@ -250,16 +250,16 @@ export default function ProfilePage() {
                 <div key={i} className="flex flex-col">
                   <span className="text-[11px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--color-text-muted)' }}>{field.label}</span>
                   {isEditing && field.editable ? (
-                    <input 
-                      type={field.type} 
-                      defaultValue={field.value} 
-                      className="w-full rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 transition-all" 
-                      style={{ 
-                        backgroundColor: 'rgba(255,255,255,0.03)', 
-                        border: '1px solid var(--color-border)', 
+                    <input
+                      type={field.type}
+                      defaultValue={field.value}
+                      className="w-full rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 transition-all"
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.03)',
+                        border: '1px solid var(--color-border)',
                         color: 'var(--color-text-primary)',
                         focusRingColor: 'var(--color-primary)',
-                      }} 
+                      }}
                     />
                   ) : (
                     <span className="text-[14px] font-medium flex items-center gap-1.5" style={{ color: 'var(--color-text-primary)' }}>
@@ -278,12 +278,12 @@ export default function ProfilePage() {
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {quickActions.map((action, i) => (
-                <button 
+                <button
                   key={i}
                   className="flex flex-col items-center gap-2.5 p-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 group"
                   style={{ backgroundColor: 'rgba(255,255,255,0.02)', border: '1px solid var(--color-border)' }}
                 >
-                  <div 
+                  <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
                     style={{ backgroundColor: `${action.color}15` }}
                   >
@@ -302,11 +302,11 @@ export default function ProfilePage() {
             </h3>
             <div className="space-y-1">
               {recentActivity.map((item, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/[0.02]"
                 >
-                  <div 
+                  <div
                     className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                     style={{ backgroundColor: `${item.color}12` }}
                   >
@@ -368,8 +368,8 @@ export default function ProfilePage() {
                   <button
                     onClick={() => { if (theme !== 'dark') toggleTheme(); }}
                     className="px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                    style={{ 
-                      backgroundColor: theme === 'dark' ? 'rgba(124, 92, 255, 0.1)' : 'rgba(255,255,255,0.03)', 
+                    style={{
+                      backgroundColor: theme === 'dark' ? 'rgba(124, 92, 255, 0.1)' : 'rgba(255,255,255,0.03)',
                       border: `1px solid ${theme === 'dark' ? 'var(--color-primary)' : 'var(--color-border)'}`,
                       color: theme === 'dark' ? 'var(--color-primary)' : 'var(--color-text-muted)',
                     }}
@@ -379,8 +379,8 @@ export default function ProfilePage() {
                   <button
                     onClick={() => { if (theme !== 'light') toggleTheme(); }}
                     className="px-3.5 py-2 rounded-xl text-sm font-medium transition-all duration-200"
-                    style={{ 
-                      backgroundColor: theme === 'light' ? 'rgba(124, 92, 255, 0.1)' : 'rgba(255,255,255,0.03)', 
+                    style={{
+                      backgroundColor: theme === 'light' ? 'rgba(124, 92, 255, 0.1)' : 'rgba(255,255,255,0.03)',
                       border: `1px solid ${theme === 'light' ? 'var(--color-primary)' : 'var(--color-border)'}`,
                       color: theme === 'light' ? 'var(--color-primary)' : 'var(--color-text-muted)',
                     }}
@@ -404,18 +404,18 @@ export default function ProfilePage() {
 
         {/* ─────── RIGHT COLUMN ─────── */}
         <div className="flex flex-col gap-6">
-          
+
           {/* Profile Strength — Circular Progress */}
           <div className="rounded-3xl p-7 transition-all duration-300 hover:-translate-y-0.5" style={cardStyle}>
             <h3 className="mb-5 flex items-center gap-2.5 font-bold text-[16px]" style={{ color: 'var(--color-text-primary)' }}>
               <Activity size={18} style={{ color: 'var(--color-primary)' }} /> Profile Strength
             </h3>
-            
+
             <div className="flex flex-col items-center mb-5">
               <CircularProgress percentage={profilePercentage} />
-              <span 
+              <span
                 className="mt-3 text-[12px] font-semibold px-3 py-1 rounded-full"
-                style={{ 
+                style={{
                   backgroundColor: profilePercentage >= 80 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
                   color: profilePercentage >= 80 ? '#10B981' : '#F59E0B',
                 }}
@@ -451,8 +451,8 @@ export default function ProfilePage() {
                 { label: 'Avg Score', value: '82%', color: '#10B981' },
                 { label: 'This Week', value: '5', color: '#F59E0B' },
               ].map((stat, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="p-3.5 rounded-xl text-center"
                   style={{ backgroundColor: `${stat.color}08`, border: `1px solid ${stat.color}15` }}
                 >
@@ -474,10 +474,10 @@ export default function ProfilePage() {
                 { title: 'Team Player', desc: '10+ candidates evaluated', icon: '🤝', earned: true },
                 { title: 'Expert Reviewer', desc: '50+ interviews completed', icon: '⭐', earned: false },
               ].map((badge, i) => (
-                <div 
-                  key={i} 
+                <div
+                  key={i}
                   className="flex items-center gap-3 p-3 rounded-xl"
-                  style={{ 
+                  style={{
                     backgroundColor: badge.earned ? 'rgba(255,255,255,0.02)' : 'transparent',
                     border: `1px solid ${badge.earned ? 'var(--color-border)' : 'transparent'}`,
                     opacity: badge.earned ? 1 : 0.45,
@@ -500,11 +500,11 @@ export default function ProfilePage() {
             </h3>
             <div className="flex flex-wrap gap-2">
               {['React', 'Node.js', 'TypeScript', 'Python', 'System Design', 'SQL', 'AWS', 'Docker'].map((skill, i) => (
-                <span 
-                  key={i} 
+                <span
+                  key={i}
                   className="text-[12px] font-medium px-3 py-1.5 rounded-lg"
-                  style={{ 
-                    backgroundColor: 'rgba(124, 92, 255, 0.08)', 
+                  style={{
+                    backgroundColor: 'rgba(124, 92, 255, 0.08)',
                     color: 'var(--color-primary)',
                     border: '1px solid rgba(124, 92, 255, 0.12)',
                   }}
@@ -516,7 +516,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-      
+
       {/* Password Update Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -526,7 +526,7 @@ export default function ProfilePage() {
             </button>
             <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-primary)' }}>Update Password</h2>
             <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>Ensure your account is using a long, random password to stay secure.</p>
-            
+
             <form onSubmit={handleUpdatePassword} className="space-y-4">
               {[
                 { label: 'Current Password', value: currentPassword, setter: setCurrentPassword },
@@ -541,10 +541,10 @@ export default function ProfilePage() {
                     value={field.value}
                     onChange={(e) => field.setter(e.target.value)}
                     className="w-full rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 transition-all"
-                    style={{ 
-                      backgroundColor: 'rgba(255,255,255,0.03)', 
-                      border: '1px solid var(--color-border)', 
-                      color: 'var(--color-text-primary)' 
+                    style={{
+                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      border: '1px solid var(--color-border)',
+                      color: 'var(--color-text-primary)'
                     }}
                   />
                 </div>
@@ -558,10 +558,10 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <LogoutModal 
-        isOpen={showLogoutModal} 
-        onClose={() => setShowLogoutModal(false)} 
-        onConfirm={handleLogout} 
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
       />
     </div>
   );

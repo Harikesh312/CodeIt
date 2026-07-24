@@ -26,7 +26,7 @@
   --color-candidates: #14B8A6;
   --color-royal: #4F46E5;
   --color-orange: #F97316;
-  
+
   --color-text-primary: #F8FAFC;
   --color-text-secondary: #E2E8F0;
   --color-text-muted: #94A3B8;
@@ -58,22 +58,58 @@ body {
 
 .bg-grid-pattern {
   background-size: 40px 40px;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
-h1 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 700; font-size: 38px; line-height: 1.1; letter-spacing: -0.02em; }
-h2 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 650; font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
-h3 { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; font-size: 18px; line-height: 1.3; }
-p { font-weight: 450; font-size: 15px; line-height: 1.6; }
-label, .text-xs, .small-label { font-weight: 500; font-size: 13px; letter-spacing: 0.015em; }
-button { font-weight: 600; }
+h1 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 38px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 650;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+p {
+  font-weight: 450;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+label,
+.text-xs,
+.small-label {
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0.015em;
+}
+
+button {
+  font-weight: 600;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Global resets & base styles
 ───────────────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -100,13 +136,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--color-bg);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-light);
 }
@@ -133,6 +172,7 @@ input[type='range'] {
   cursor: pointer;
   outline: none;
 }
+
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -145,10 +185,12 @@ input[type='range']::-webkit-slider-thumb {
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
 input[type='range']::-webkit-slider-thumb:hover {
   transform: scale(1.15);
   box-shadow: 0 0 0 3px var(--color-primary-light), 0 4px 12px rgba(79, 70, 229, 0.5);
 }
+
 input[type='range']::-moz-range-thumb {
   width: 18px;
   height: 18px;
@@ -158,6 +200,7 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 0 0 2px var(--color-primary), 0 2px 8px rgba(79, 70, 229, 0.4);
   cursor: pointer;
 }
+
 input[type='range']::-moz-range-track {
   height: 6px;
   background: var(--color-border);
@@ -170,7 +213,9 @@ input[type='range']::-moz-range-track {
 .monaco-editor .overflow-guard {
   border-radius: 0 0 12px 12px;
 }
-.monaco-editor, .monaco-editor-background {
+
+.monaco-editor,
+.monaco-editor-background {
   background-color: #0d1117 !important;
 }
 
@@ -188,41 +233,77 @@ input[type='range']::-moz-range-track {
    Animations
 ───────────────────────────────────────────────────────────────────────────── */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 .animate-slide-up {
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
 .animate-scale-in {
   animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideUpFade {
-  from { opacity: 0; transform: translateY(20px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
+
 .animate-slide-up-fade {
   animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
+
 .animate-shimmer {
   background: linear-gradient(90deg, transparent 25%, rgba(79, 70, 229, 0.08) 50%, transparent 75%);
   background-size: 200% 100%;
@@ -230,9 +311,17 @@ input[type='range']::-moz-range-track {
 }
 
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(79, 70, 229, 0.15); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 20px 4px rgba(79, 70, 229, 0.15);
+  }
 }
+
 .animate-glow-pulse {
   animation: glowPulse 3s ease-in-out infinite;
 }
@@ -251,6 +340,7 @@ input[type='range']::-moz-range-track {
 .hover-elevate {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .hover-elevate:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
@@ -259,6 +349,7 @@ input[type='range']::-moz-range-track {
 .button-premium {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .button-premium:hover {
   transform: scale(1.02);
   box-shadow: 0 0 20px rgba(91, 108, 255, 0.25);
@@ -271,6 +362,7 @@ input[type='range']::-moz-range-track {
   border: 1px solid var(--color-border);
   border-radius: 24px;
 }
+
 [data-theme="light"] .glass-panel {
   background: rgba(255, 255, 255, 0.75);
 }
@@ -278,17 +370,44 @@ input[type='range']::-moz-range-track {
 .soft-glow {
   transition: box-shadow 0.25s ease-out, transform 0.25s ease-out;
 }
+
 .soft-glow:hover {
   box-shadow: 0 0 30px rgba(124, 92, 255, 0.15);
 }
 
 /* Premium Card Accents */
-.card-accent-analytics { border-top: 2px solid var(--color-analytics) !important; }
-.card-accent-upcoming { border-top: 2px solid var(--color-upcoming) !important; }
-.card-accent-history { border-top: 2px solid var(--color-history) !important; }
-.card-accent-candidates { border-top: 2px solid var(--color-candidates) !important; }
-.card-accent-success { border-top: 2px solid var(--color-success) !important; }
-.card-accent-warning { border-top: 2px solid var(--color-warning) !important; }
-.card-accent-royal { border-top: 2px solid var(--color-royal) !important; }
-.card-accent-orange { border-top: 2px solid var(--color-orange) !important; }
-.card-accent-danger { border-top: 2px solid var(--color-danger) !important; }
+.card-accent-analytics {
+  border-top: 2px solid var(--color-analytics) !important;
+}
+
+.card-accent-upcoming {
+  border-top: 2px solid var(--color-upcoming) !important;
+}
+
+.card-accent-history {
+  border-top: 2px solid var(--color-history) !important;
+}
+
+.card-accent-candidates {
+  border-top: 2px solid var(--color-candidates) !important;
+}
+
+.card-accent-success {
+  border-top: 2px solid var(--color-success) !important;
+}
+
+.card-accent-warning {
+  border-top: 2px solid var(--color-warning) !important;
+}
+
+.card-accent-royal {
+  border-top: 2px solid var(--color-royal) !important;
+}
+
+.card-accent-orange {
+  border-top: 2px solid var(--color-orange) !important;
+}
+
+.card-accent-danger {
+  border-top: 2px solid var(--color-danger) !important;
+}

@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
   return (
     <div className="relative h-full flex flex-col space-y-10 animate-fade-in max-w-7xl mx-auto pb-10 w-full z-0">
-      
+
       {/* Premium Hero Section */}
       <div className="relative p-10 md:p-14 rounded-3xl overflow-hidden flex items-center justify-between glass-panel hover:-translate-y-0.5 transition-all duration-300 min-h-[240px]">
         <div className="relative z-10 max-w-2xl">
@@ -105,35 +105,35 @@ export default function DashboardPage() {
 
       {/* Row 1: Analytics & AI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 flex-1">
-        
+
         {/* GitHub-style Performance Analytics */}
         <div className="lg:col-span-2 relative p-8 rounded-3xl transition-all duration-300 glass-panel hover:-translate-y-0.5 overflow-hidden card-accent-analytics" style={{ minHeight: '260px' }}>
           {/* Watermark */}
           <Activity className="absolute right-4 bottom-4 w-40 h-40 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-analytics)' }} />
-          
+
           <div className="relative z-10 flex items-center justify-between mb-6">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
               <Activity size={18} className="text-cyan-400" /> Performance Analytics
             </h2>
           </div>
-          
+
           <div className="h-28 flex items-end justify-between gap-3 relative">
             <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="w-full border-b" style={{ borderColor: 'rgba(255,255,255,0.03)' }} />
               ))}
             </div>
-            
+
             {weeklyData.map((d, i) => {
               const heightPct = (d.value / maxVal) * 100;
               return (
                 <div key={i} className="flex-1 flex flex-col justify-end items-center h-full relative z-10 group">
-                  <div 
-                    className="w-full max-w-[40px] rounded-t-md transition-all duration-300 group-hover:opacity-80" 
-                    style={{ 
-                      height: `${heightPct}%`, 
+                  <div
+                    className="w-full max-w-[40px] rounded-t-md transition-all duration-300 group-hover:opacity-80"
+                    style={{
+                      height: `${heightPct}%`,
                       background: 'linear-gradient(to top, rgba(6, 182, 212, 0.2), rgba(6, 182, 212, 0.8))'
-                    }} 
+                    }}
                   />
                   <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-xs py-1 px-2 rounded-md shadow-lg">
                     {d.value}
@@ -172,11 +172,11 @@ export default function DashboardPage() {
 
       {/* Row 2: 2 Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
+
         {/* Upcoming Sessions */}
         <div className="relative p-8 rounded-3xl transition-all duration-300 glass-panel hover:-translate-y-0.5 flex-1 overflow-hidden card-accent-upcoming">
           <Calendar className="absolute -right-6 -top-6 w-48 h-48 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-upcoming)' }} />
-          
+
           <div className="relative z-10 flex items-center justify-between mb-6">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
               <Calendar size={18} className="text-violet-400" /> Upcoming
@@ -185,7 +185,7 @@ export default function DashboardPage() {
               View all
             </button>
           </div>
-          
+
           <div className="space-y-3">
             {loading ? (
               <div className="animate-pulse h-16 rounded-xl bg-slate-800/30 w-full" />
@@ -215,13 +215,13 @@ export default function DashboardPage() {
         {/* Session History */}
         <div className="relative p-8 rounded-3xl flex flex-col h-full transition-all duration-300 glass-panel hover:-translate-y-0.5 overflow-hidden card-accent-history">
           <TrendingUp className="absolute right-2 bottom-12 w-56 h-56 opacity-[0.03] pointer-events-none" style={{ color: 'var(--color-history)' }} />
-          
+
           <div className="relative z-10 flex items-center justify-between mb-8">
             <h2 className="flex items-center gap-2 font-bold" style={{ color: 'var(--color-text-primary)' }}>
               <TrendingUp size={18} className="text-slate-400" /> History
             </h2>
           </div>
-          
+
           <div className="space-y-4 flex-1">
             {loading ? (
               <div className="animate-pulse h-16 rounded-xl bg-slate-800/30 w-full" />
@@ -235,13 +235,13 @@ export default function DashboardPage() {
                   let statusText = 'Created session';
                   let StatusIcon = Plus;
                   let iconColor = 'text-indigo-400';
-                  
+
                   if (room.status === ROOM_STATUSES.COMPLETED) {
                     statusText = 'Concluded';
                     StatusIcon = CheckCircle2;
                     iconColor = 'text-emerald-400';
                   }
-                  
+
                   return (
                     <div key={room._id} className="relative z-10 flex items-start gap-4">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full border shrink-0 mt-1" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>

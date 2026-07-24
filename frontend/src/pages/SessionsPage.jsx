@@ -76,7 +76,7 @@ function CreateRoomModal({ onClose, onCreate }) {
         <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-[0.02] blur-[2px]">
           <Video size={400} className="text-indigo-400 translate-x-1/4" />
         </div>
-        
+
         <div className="relative z-10 flex items-center justify-between px-10 py-8" style={{ borderBottom: '1px solid var(--color-border)' }}>
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'rgba(91,108,255,0.1)' }}>
@@ -245,7 +245,7 @@ export default function SessionsPage() {
 
   return (
     <div className="relative h-full flex flex-col z-0">
-      
+
       {/* Background Watermark */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.03] blur-[2px]">
         <FileText size={800} className="text-indigo-400" />

@@ -3,7 +3,7 @@ import React from 'react';
 export default function Logo({ className = "" }) {
   const id = React.useId().replace(/:/g, '');
   const size = 28;
-  
+
   return (
     <div className={`relative flex items-center justify-center w-[52px] h-[52px] shrink-0 ${className}`}>
       {/* Soft purple glow */}
@@ -11,11 +11,11 @@ export default function Logo({ className = "" }) {
       {/* Proper padding inside the icon background */}
       <div className="relative w-full h-full bg-[#111827] border border-white/10 rounded-2xl flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#6366F1]/20 to-transparent pointer-events-none"></div>
-        <svg 
-          width={size} 
-          height={size} 
-          viewBox="0 0 40 40" 
-          fill="none" 
+        <svg
+          width={size}
+          height={size}
+          viewBox="0 0 40 40"
+          fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="text-white z-10 relative"
           style={{ filter: 'drop-shadow(0px 0px 8px rgba(99, 102, 241, 0.4))' }}
@@ -37,38 +37,38 @@ export default function Logo({ className = "" }) {
           </defs>
 
           {/* Hexagonal outer frame - tech feel */}
-          <path 
-            d="M20 3L35.32 11.5V28.5L20 37L4.68 28.5V11.5L20 3Z" 
+          <path
+            d="M20 3L35.32 11.5V28.5L20 37L4.68 28.5V11.5L20 3Z"
             stroke={`url(#lg3_${id})`}
-            strokeWidth="2.2" 
+            strokeWidth="2.2"
             strokeLinejoin="round"
             fill="none"
             opacity="0.8"
           />
 
           {/* Left code bracket < */}
-          <path 
-            d="M16 13L9 20L16 27" 
+          <path
+            d="M16 13L9 20L16 27"
             stroke={`url(#lg1_${id})`}
-            strokeWidth="3.2" 
-            strokeLinecap="round" 
+            strokeWidth="3.2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
 
           {/* Right code bracket > */}
-          <path 
-            d="M24 13L31 20L24 27" 
+          <path
+            d="M24 13L31 20L24 27"
             stroke={`url(#lg1_${id})`}
-            strokeWidth="3.2" 
-            strokeLinecap="round" 
+            strokeWidth="3.2"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
-          
+
           {/* Central slash - represents code/forward */}
-          <path 
-            d="M22.5 11L17.5 29" 
+          <path
+            d="M22.5 11L17.5 29"
             stroke={`url(#lg2_${id})`}
-            strokeWidth="2.8" 
+            strokeWidth="2.8"
             strokeLinecap="round"
           />
 

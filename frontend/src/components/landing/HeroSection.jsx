@@ -26,10 +26,10 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen pt-32 pb-20 overflow-hidden flex flex-col justify-center">
       <div className="container mx-auto px-8 max-w-[1500px] relative z-10 w-full flex flex-col gap-20">
-        
+
         {/* Top Split Layout */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-12 items-center">
-          
+
           {/* Left Content */}
           <motion.div
             variants={containerVariants}
@@ -77,7 +77,7 @@ export default function HeroSection() {
             <div className="relative w-full max-w-[800px] aspect-[4/3]">
               {/* Central glowing core */}
               <div className="absolute inset-0 bg-gradient-to-tr from-[#6366F1]/30 to-[#06B6D4]/30 blur-[100px] rounded-full animate-pulse" />
-              
+
               {/* Main Mockup Dashboard Abstract */}
               <div className="absolute inset-0 bg-[#0B1220]/60 backdrop-blur-xl border border-white/10 rounded-[32px] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] transform rotate-2 hover:rotate-0 transition-transform duration-700 z-10 flex flex-col">
                 {/* Mockup Header */}
@@ -103,24 +103,24 @@ export default function HeroSection() {
                       <div className="w-1/2 h-6 bg-white/20 rounded-full"></div>
                     </div>
                   </div>
-                  
+
                   <div className="flex-1 w-full bg-white/5 rounded-2xl border border-white/5 mt-2 relative overflow-hidden p-6">
                     <div className="w-1/3 h-6 bg-white/10 rounded-full mb-8"></div>
                     <div className="flex items-end gap-4 h-32 w-full absolute bottom-6 left-6 right-6">
-                       <div className="flex-1 bg-[#6366F1]/40 rounded-t-md h-[40%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
-                       <div className="flex-1 bg-[#06B6D4]/40 rounded-t-md h-[60%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
-                       <div className="flex-1 bg-[#7C3AED]/40 rounded-t-md h-[30%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
-                       <div className="flex-1 bg-[#6366F1]/40 rounded-t-md h-[80%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
-                       <div className="flex-1 bg-[#06B6D4]/40 rounded-t-md h-[50%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
-                       <div className="flex-1 bg-[#7C3AED]/40 rounded-t-md h-[90%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#6366F1]/40 rounded-t-md h-[40%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#06B6D4]/40 rounded-t-md h-[60%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#7C3AED]/40 rounded-t-md h-[30%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#6366F1]/40 rounded-t-md h-[80%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#06B6D4]/40 rounded-t-md h-[50%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
+                      <div className="flex-1 bg-[#7C3AED]/40 rounded-t-md h-[90%] transform origin-bottom hover:scale-y-110 transition-transform"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Floating Cards (positioned relative to the larger dashboard) */}
-              <motion.div 
-                animate={{ y: [0, -20, 0] }} 
+              <motion.div
+                animate={{ y: [0, -20, 0] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute top-16 -left-12 bg-[#111827]/80 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-2xl flex items-center gap-5 z-20 hover:scale-105 transition-transform"
               >
@@ -133,8 +133,8 @@ export default function HeroSection() {
                 </div>
               </motion.div>
 
-              <motion.div 
-                animate={{ y: [0, 20, 0] }} 
+              <motion.div
+                animate={{ y: [0, 20, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
                 className="absolute top-1/2 -right-16 bg-[#111827]/80 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-2xl flex items-center gap-5 z-20 hover:scale-105 transition-transform"
               >
@@ -147,8 +147,8 @@ export default function HeroSection() {
                 </div>
               </motion.div>
 
-              <motion.div 
-                animate={{ y: [0, -15, 0] }} 
+              <motion.div
+                animate={{ y: [0, -15, 0] }}
                 transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
                 className="absolute -bottom-10 left-16 bg-[#111827]/80 backdrop-blur-xl border border-white/10 p-6 rounded-3xl shadow-2xl flex items-center gap-5 z-20 hover:scale-105 transition-transform"
               >

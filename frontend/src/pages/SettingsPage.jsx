@@ -36,7 +36,7 @@ export default function SettingsPage() {
 
   return (
     <div className="relative max-w-5xl mx-auto h-full space-y-8 animate-fade-in pb-12 w-full z-0">
-      
+
       {/* Background Watermark */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-[-1] opacity-[0.03] blur-[2px]">
         <SettingsIcon size={800} className="text-indigo-400" />
@@ -45,7 +45,7 @@ export default function SettingsPage() {
       {/* Header */}
       <div className="relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-10 rounded-3xl transition-all duration-250 hover-elevate soft-glow glass-panel mb-10">
         <SettingsIcon className="absolute -right-6 -top-10 w-64 h-64 opacity-[0.03] text-indigo-400 pointer-events-none" />
-        
+
         <div className="relative z-10 flex items-center gap-6">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold text-white shadow-md" style={{ backgroundColor: 'var(--color-primary)' }}>
             <SettingsIcon size={28} />
@@ -62,7 +62,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-6">
-        
+
         {/* General / Account */}
         <SettingSection title="General" description="Update your basic account information." icon={User}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
@@ -91,21 +91,21 @@ export default function SettingsPage() {
         {/* Appearance */}
         <SettingSection title="Appearance" description="Customize how CodeIt looks on your device." icon={Monitor}>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl">
-            <button 
+            <button
               onClick={() => setTheme('system')}
               className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${theme === 'system' ? 'border-indigo-500 bg-indigo-500/5' : 'border-transparent bg-slate-800/30 hover:border-slate-700'}`}
             >
               <Monitor size={24} className={theme === 'system' ? 'text-indigo-400' : 'text-slate-400'} />
               <span className="text-sm font-medium" style={{ color: theme === 'system' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>System</span>
             </button>
-            <button 
+            <button
               onClick={() => setTheme('dark')}
               className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${theme === 'dark' ? 'border-indigo-500 bg-indigo-500/5' : 'border-transparent bg-slate-800/30 hover:border-slate-700'}`}
             >
               <Moon size={24} className={theme === 'dark' ? 'text-indigo-400' : 'text-slate-400'} />
               <span className="text-sm font-medium" style={{ color: theme === 'dark' ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>Dark</span>
             </button>
-            <button 
+            <button
               onClick={() => setTheme('light')}
               className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 ${theme === 'light' ? 'border-indigo-500 bg-indigo-500/5' : 'border-transparent bg-slate-800/30 hover:border-slate-700'}`}
             >
@@ -131,7 +131,7 @@ export default function SettingsPage() {
             </div>
           </div>
         </SettingSection>
-        
+
         {/* About */}
         <SettingSection title="About" description="System information and resources." icon={Info}>
           <div className="flex flex-col gap-3">

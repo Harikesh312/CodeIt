@@ -65,9 +65,8 @@ function TestCaseCard({ result }) {
               {result.actualOutput !== undefined && (
                 <div>
                   <span className="text-[10px] text-gray-500 font-medium">Your Output</span>
-                  <pre className={`bg-gray-900 rounded px-2 py-1.5 text-xs font-mono mt-0.5 whitespace-pre-wrap ${
-                    passed ? 'text-emerald-400' : 'text-red-400'
-                  }`}>{result.actualOutput}</pre>
+                  <pre className={`bg-gray-900 rounded px-2 py-1.5 text-xs font-mono mt-0.5 whitespace-pre-wrap ${passed ? 'text-emerald-400' : 'text-red-400'
+                    }`}>{result.actualOutput}</pre>
                 </div>
               )}
               {result.errorMessage && (
@@ -174,31 +173,28 @@ export default function OutputPanel() {
         <div className="flex">
           <button
             onClick={() => setActiveTab('terminal')}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === 'terminal'
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'terminal'
                 ? 'text-emerald-400 border-emerald-400'
                 : 'text-gray-500 border-transparent hover:text-gray-300'
-            }`}
+              }`}
           >
             <Terminal size={13} />
             Terminal
           </button>
           <button
             onClick={() => setActiveTab('tests')}
-            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
-              activeTab === 'tests'
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors border-b-2 ${activeTab === 'tests'
                 ? 'text-blue-400 border-blue-400'
                 : 'text-gray-500 border-transparent hover:text-gray-300'
-            }`}
+              }`}
           >
             <FlaskConical size={13} />
             Test Results
             {testResults?.summary && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                testResults.summary.passed === testResults.summary.total
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${testResults.summary.passed === testResults.summary.total
                   ? 'bg-emerald-500/20 text-emerald-400'
                   : 'bg-red-500/20 text-red-400'
-              }`}>
+                }`}>
                 {testResults.summary.passed}/{testResults.summary.total}
               </span>
             )}
@@ -271,11 +267,10 @@ export default function OutputPanel() {
 
             {submitResult && (
               <div
-                className={`flex items-start gap-2 p-3 rounded-lg border text-sm ${
-                  submitResult.success
+                className={`flex items-start gap-2 p-3 rounded-lg border text-sm ${submitResult.success
                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                     : 'bg-red-500/10 border-red-500/30 text-red-300'
-                }`}
+                  }`}
               >
                 {submitResult.success ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
                 <span>{submitResult.message}</span>
